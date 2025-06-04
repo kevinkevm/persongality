@@ -1,0 +1,1074 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>What Does Your Music Say About You?</title>
+    <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
+    <script src="personality-analyzer.js"></script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        html {
+            background: #FFF5F7;
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #FFF5F7;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #bc7373;
+            padding: 15px;
+        }
+        .container {
+            text-align: center;
+            max-width: 800px;
+            width: 100%;
+            padding: clamp(20px, 5vw, 40px);
+            background: linear-gradient(135deg, #FFF5F7, #FFF0F5);
+            border-radius: clamp(20px, 4vw, 30px);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            position: relative;
+            overflow: hidden;
+        }
+        .container::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(
+                45deg,
+                rgba(255, 51, 102, 0.05),
+                rgba(255, 107, 61, 0.05),
+                rgba(157, 80, 187, 0.05),
+                rgba(110, 72, 170, 0.05)
+            );
+            animation: gradient 15s ease infinite;
+            opacity: 0.5;
+            z-index: 0;
+        }
+        @keyframes gradient {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        .logo {
+            font-size: clamp(2.5rem, 8vw, 3rem);
+            margin-bottom: clamp(15px, 4vw, 20px);
+            animation: fadeIn 1s ease-in;
+        }
+        .tagline {
+            font-size: clamp(1.2rem, 4vw, 1.5rem);
+            margin-bottom: clamp(30px, 6vw, 40px);
+            font-weight: 300;
+            animation: fadeIn 1s ease-in 0.2s both;
+            padding: 0 10px;
+            color: #610000;
+        }
+        .btn {
+            background: linear-gradient(45deg, #FF3366, #FF6B3D);
+            color: white;
+            border: none;
+            padding: clamp(12px, 3vw, 16px) clamp(25px, 5vw, 40px);
+            font-size: clamp(1rem, 3vw, 1.1rem);
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 600;
+            margin: 10px;
+            animation: fadeIn 1s ease-in 0.4s both;
+            box-shadow: 0 4px 15px rgba(255, 51, 102, 0.3);
+            width: clamp(200px, 80%, 300px);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .btn:hover { 
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(255, 51, 102, 0.4);
+        }
+        .loading {
+            display: none;
+            margin-top: 30px;
+        }
+        .spinner {
+            border: 3px solid rgba(0,0,0,0.1);
+            border-radius: 50%;
+            border-top: 3px solid #000000;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+        .result {
+            background: white;
+            border-radius: 25px;
+            padding: 30px 25px;
+            margin: 20px auto;
+            text-align: left;
+            display: none;
+            max-width: 430px;
+        }
+        .result-container {
+            padding: 0 !important;
+        }
+        .personality-title {
+            font-size: clamp(2rem, 6vw, 2.8rem) !important;
+            padding: 0 10px;
+            font-weight: bold;
+            margin-bottom: 10px;
+            background: linear-gradient(45deg, #ff6b6b, #feca57);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-align: center;
+        }
+        .trait {
+            margin-bottom: 15px;
+            padding: 15px;
+            background: rgba(255,255,255,0.05);
+            border-radius: 10px;
+            border-left: 3px solid #ff6b6b;
+        }
+        .dimension-card {
+            padding: clamp(20px, 4vw, 25px) !important;
+        }
+        .dimension-title {
+            font-size: clamp(1rem, 3.5vw, 1.3rem) !important;
+        }
+        .dimension-number {
+            min-width: clamp(30px, 8vw, 35px) !important;
+            height: clamp(30px, 8vw, 35px) !important;
+            font-size: clamp(1rem, 3vw, 1.2rem) !important;
+        }
+        .dimension-content {
+            font-size: clamp(0.95rem, 3vw, 1.1rem) !important;
+            margin-left: clamp(35px, 10vw, 50px) !important;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        @media (max-width: 480px) {
+            body {
+                padding: 15px;
+                background: #FFF5F7;
+            }
+            .container {
+                padding: 0;
+                background: transparent;
+                box-shadow: none;
+            }
+            .result {
+                margin: 0;
+                padding: 25px 20px;
+            }
+            .btn {
+                display: block;
+                margin: 10px auto;
+            }
+            .action-buttons {
+                display: flex;
+                flex-direction: column;
+                gap: 10px;
+            }
+            .action-buttons button {
+                margin: 0;
+                width: 100%;
+            }
+        }
+        @media (max-width: 380px) {
+            .dimension-title {
+                font-size: 0.9rem !important;
+            }
+            .dimension-content {
+                font-size: 0.9rem !important;
+                margin-left: 35px !important;
+            }
+        }
+        @media (min-width: 768px) {
+            .container {
+                max-width: 800px !important;
+                padding: clamp(25px, 5vw, 40px) !important;
+            }
+            .result {
+                max-width: 650px !important;
+                padding: 30px !important;
+            }
+            .result-container {
+                max-width: 650px !important;
+            }
+            .dimension-card {
+                padding: 25px !important;
+            }
+            .dimension-title {
+                font-size: 1.5rem !important;
+            }
+            .dimension-content {
+                font-size: 1.1rem !important;
+            }
+        }
+
+        @media (min-width: 1024px) {
+            .container {
+                max-width: 900px !important;
+            }
+            .result {
+                max-width: 750px !important;
+            }
+            .result-container {
+                max-width: 750px !important;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div id="landing">
+            <div class="logo">🎵</div>
+            <h1 class="tagline" style="color: #500000;"> <b> What Does Your Music Say About You?</b></h1>
+            <button class="btn" onclick="connectSpotify()">Connect Your Spotify</button>
+            <button class="btn" onclick="showTesting()" style="
+                background: linear-gradient(45deg, #6E48AA, #9D50BB);
+                margin-top: 15px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                gap: 10px;
+            ">
+                🧪 Test Different Personalities
+            </button>
+            <div class="loading" id="loading">
+                <div class="spinner"></div>
+                <p><b> Analyzing your musical soul... </b></p>
+            </div>
+        </div>
+
+        <div class="result" id="result">
+            <div class="result-container" style="
+                position: relative;
+                max-width: 800px;
+                margin: 0 auto;
+                background: rgba(255, 255, 255, 0.98);
+                padding: clamp(15px, 4vw, 40px);
+                border-radius: clamp(20px, 4vw, 30px);
+                box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            ">
+                <div class="personality-title" id="personalityName"></div>
+                <div style="text-align: center; margin-bottom: 20px;">
+                    <span id="personalityCode" style="background: rgba(255,255,255,0.2); padding: 5px 15px; border-radius: 15px; font-weight: bold;"></span>
+                </div>
+                <div id="traits"></div>
+                <button onclick="saveImage()" style="
+                    background: linear-gradient(45deg, #6E48AA, #9D50BB);
+                    color: white;
+                    border: none;
+                    padding: 16px 35px;
+                    border-radius: 30px;
+                    cursor: pointer;
+                    font-weight: 600;
+                    font-size: 1.1rem;
+                    transition: all 0.3s ease;
+                    box-shadow: 0 4px 15px rgba(157, 80, 187, 0.4);
+                    display: block;
+                    margin: 20px auto;
+                    max-width: 300px;
+                ">
+                    Save for Instagram Story 📱
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const CLIENT_ID = 'a657acb2c038484aa0283ed48eda8803';
+        const REDIRECT_URI = 'https://kevinkevm.github.io/pursongality/';
+        const SCOPES = 'user-top-read user-read-recently-played user-read-playback-state';
+
+        let accessToken = null;
+        let personalityAnalyzer = new PersonalityAnalyzer();
+
+        function generateCodeVerifier() {
+            const array = new Uint8Array(32);
+            crypto.getRandomValues(array);
+            return btoa(String.fromCharCode.apply(null, array))
+                .replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+        }
+
+        async function generateCodeChallenge(verifier) {
+            const encoder = new TextEncoder();
+            const data = encoder.encode(verifier);
+            const digest = await crypto.subtle.digest('SHA-256', data);
+            return btoa(String.fromCharCode.apply(null, new Uint8Array(digest)))
+                .replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+        }
+
+        async function connectSpotify() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const code = urlParams.get('code');
+
+            if (code) {
+                // We're in the callback flow - don't clear localStorage
+                document.querySelector('.btn').style.display = 'none';
+                document.getElementById('loading').style.display = 'block';
+
+                try {
+                    const tokenData = await getAccessToken(code);
+                    accessToken = tokenData.access_token;
+                    
+                    const tracks = await getTopTracks();
+                    console.log('Got tracks:', tracks);
+                    
+                    let features = null;
+                    try {
+                        features = await getAudioFeatures(tracks.items.map(t => t.id));
+                        console.log('Got audio features:', features);
+                    } catch (audioError) {
+                        console.log('Audio features failed, using track data instead:', audioError);
+                    }
+                    
+                    const personality = personalityAnalyzer.analyzePersonality(features?.audio_features, tracks.items);
+                    showResult(personality, tracks.items);
+                } catch (error) {
+                    console.error('Error:', error);
+                    alert('Error: ' + error.message);
+                    document.getElementById('loading').style.display = 'none';
+                    document.querySelector('.btn').style.display = 'inline-block';
+                }
+            } else {
+                // Clear localStorage only when starting fresh authentication
+                localStorage.clear();
+                
+                const verifier = generateCodeVerifier();
+                const challenge = await generateCodeChallenge(verifier);
+                localStorage.setItem('code_verifier', verifier);
+
+                const params = new URLSearchParams({
+                    client_id: CLIENT_ID,
+                    response_type: 'code',
+                    redirect_uri: REDIRECT_URI,
+                    scope: 'user-top-read user-read-private user-library-read playlist-read-private',
+                    code_challenge_method: 'S256',
+                    code_challenge: challenge
+                }).toString();
+
+                window.location.href = 'https://accounts.spotify.com/authorize?' + params;
+            }
+        }
+
+        async function getAccessToken(code) {
+            const verifier = localStorage.getItem('code_verifier');
+    
+            if (!verifier) {
+                console.error('No code verifier found in localStorage');
+                throw new Error('Authentication error: Missing code verifier');
+            }
+    
+            const params = new URLSearchParams({
+                client_id: CLIENT_ID,
+                grant_type: 'authorization_code',
+                code: code,
+                redirect_uri: REDIRECT_URI,
+                code_verifier: verifier
+            });
+
+            try {
+                console.log('Requesting token with params:', {
+                    code: code.substring(0, 10) + '...',
+                    redirect_uri: REDIRECT_URI,
+                    verifier_length: verifier.length
+                });
+                
+                const response = await fetch('https://accounts.spotify.com/api/token', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                    body: params
+                });
+
+                console.log('Token response status:', response.status);
+        
+                if (!response.ok) {
+                    const errorText = await response.text();
+                    console.error('Token error response:', errorText);
+                    throw new Error(`Token request failed (${response.status}): ${errorText}`);
+                }
+        
+                return response.json();
+            } catch (error) {
+                console.error('Token fetch error:', error);
+                throw error;
+            }
+        }
+
+        async function getTopTracks() {
+            const response = await fetch('https://api.spotify.com/v1/me/top/tracks?limit=20', {
+                headers: { 'Authorization': `Bearer ${accessToken}` }
+            });
+            if (!response.ok) throw new Error('Failed to get tracks');
+            return response.json();
+        }
+
+        async function getAudioFeatures(trackIds) {
+            console.log('Looking up audio features from local data for tracks:', trackIds);
+            
+            try {
+                const response = await fetch('/spotify2023.csv');
+                const csvText = await response.text();
+                
+                // Parse CSV data
+                const rows = csvText.split('\n')
+                    .filter(row => row.trim());
+                
+                const headers = rows[0].split(',');
+                const data = rows.slice(1).map(row => row.split(','));
+                
+                // Get track names from Spotify API
+                const tracksResponse = await fetch('https://api.spotify.com/v1/tracks?ids=' + trackIds.join(','), {
+                    headers: { 'Authorization': `Bearer ${accessToken}` }
+                });
+                
+                if (!tracksResponse.ok) {
+                    throw new Error('Failed to get track names from Spotify');
+                }
+                
+                const tracksData = await tracksResponse.json();
+                console.log('Got track names:', tracksData);
+                
+                // Find matching tracks in CSV
+                const audioFeatures = [];
+                let matchedCount = 0;
+                
+                for (const track of tracksData.tracks) {
+                    const trackName = track.name;
+                    console.log(`Looking for match for: "${trackName}"`);
+                    
+                    // Find matching row in CSV by exact track name
+                    const matchingRow = data.find(row => row[0] === trackName);
+                    
+                    if (matchingRow) {
+                        console.log(`Found match for "${trackName}"`);
+                        matchedCount++;
+                        audioFeatures.push({
+                            id: track.id,
+                            danceability: parseInt(matchingRow[headers.indexOf('danceability_%')]) / 100,
+                            energy: parseInt(matchingRow[headers.indexOf('energy_%')]) / 100,
+                            valence: parseInt(matchingRow[headers.indexOf('valence_%')]) / 100,
+                            acousticness: parseInt(matchingRow[headers.indexOf('acousticness_%')]) / 100,
+                            instrumentalness: parseInt(matchingRow[headers.indexOf('instrumentalness_%')]) / 100,
+                            tempo: parseInt(matchingRow[headers.indexOf('bpm')])
+                        });
+                    } else {
+                        console.log(`No match found for track: "${trackName}"`);
+                    }
+                }
+                
+                const totalTracks = tracksData.tracks.length;
+                const matchRatio = matchedCount / totalTracks;
+                console.log(`Found matches for ${matchedCount} out of ${totalTracks} tracks (${(matchRatio * 100).toFixed(1)}%)`);
+                
+                if (audioFeatures.length === 0) {
+                    throw new Error('No matching tracks found in database');
+                }
+                
+                // Calculate confidence weight based on match ratio
+                // If we find all tracks, weight = 1
+                // If we find minimum tracks (1), weight = 0.3
+                // Scale linearly between these points
+                const minWeight = 0.3;
+                const confidenceWeight = minWeight + (1 - minWeight) * matchRatio;
+                
+                console.log(`Confidence weight based on matches: ${confidenceWeight.toFixed(2)}`);
+                
+                // Add confidence weight to the response
+                return { 
+                    audio_features: audioFeatures,
+                    confidence_weight: confidenceWeight,
+                    matches_found: matchedCount,
+                    total_tracks: totalTracks
+                };
+
+            } catch (error) {
+                console.error('Failed to get audio features from CSV:', error);
+                throw error;
+            }
+        }
+
+        async function getTopArtists(accessToken) {
+            const response = await fetch('https://api.spotify.com/v1/me/top/artists?limit=9', {
+                headers: { 'Authorization': `Bearer ${accessToken}` }
+            });
+            if (!response.ok) throw new Error('Failed to get artists');
+            return response.json();
+        }
+
+        function createArtistCollage(artists) {
+            return `
+                <div class="artist-collage" style="
+                    position: absolute;
+                    top: 0;
+                    left: 0;
+                    right: 0;
+                    bottom: 0;
+                    display: grid;
+                    grid-template-columns: repeat(3, 1fr);
+                    opacity: 0.15;
+                    z-index: 1;
+                    overflow: hidden;
+                ">
+                    ${artists.items.map(artist => `
+                        <div style="
+                            background-image: url('${artist.images[0].url}');
+                            background-size: cover;
+                            background-position: center;
+                            filter: grayscale(100%);
+                        "></div>
+                    `).join('')}
+                </div>
+            `;
+        }
+
+        async function showResult(personality, tracks) {
+            document.getElementById('landing').style.display = 'none';
+            
+            // Get top artists for the collage
+            getTopArtists(accessToken).then(artists => {
+                // Function to create album art collage style
+                function createAlbumCollage(songs, track) {
+                    if (!track || !track.album || !track.album.images || !track.album.images[0]) {
+                        return 'background: rgba(0,0,0,0.1);';
+                    }
+                    return `
+                        position: absolute;
+                        top: 0;
+                        left: 0;
+                        right: 0;
+                        bottom: 0;
+                        background-image: url('${track.album.images[0].url}');
+                        background-size: cover;
+                        background-position: center;
+                        opacity: 0.15;
+                        filter: grayscale(100%);
+                    `;
+                }
+
+                // Get song examples for each dimension using the new analyzer
+                const socialSongs = personalityAnalyzer.getSongExamplesForDimension(tracks, 'social', [], 3);
+                const emotionalSongs = personalityAnalyzer.getSongExamplesForDimension(tracks, 'emotional', socialSongs.map(s => s.song), 3);
+                const hiddenSongs = personalityAnalyzer.getSongExamplesForDimension(tracks, 'hidden', [...socialSongs, ...emotionalSongs].map(s => s.song), 3);
+                const philosophySongs = personalityAnalyzer.getSongExamplesForDimension(tracks, 'philosophy', [...socialSongs, ...emotionalSongs, ...hiddenSongs].map(s => s.song), 3);
+
+                document.getElementById('result').innerHTML = `
+                    <div class="result-container" style="position: relative; max-width: 800px; margin: 0 auto; background: rgba(255, 255, 255, 0.98); padding: clamp(15px, 4vw, 40px); border-radius: clamp(20px, 4vw, 30px); box-shadow: 0 10px 30px rgba(0,0,0,0.2);">
+                        <!-- Personality Title Section -->
+                        <div style="text-align: center; margin-bottom: 40px;">
+                            <div style="font-size: 2rem; color: #666; margin-bottom: 25px; font-style: italic;">Your Musical Personality Analysis</div>
+                        </div>
+
+                        <!-- 4 Dimensions Section -->
+                        <div style="display: flex; flex-direction: column; gap: 15px;">
+                            <!-- Social Role -->
+                            <div style="
+                                background: linear-gradient(135deg, #FF6B6B, #FF8E8E);
+                                border-radius: 25px;
+                                padding: 30px;
+                                position: relative;
+                                overflow: hidden;
+                                transform: scale(1);
+                                transition: transform 0.3s ease;
+                                cursor: pointer;
+                            " onmouseover="this.style.transform='scale(1.02)'" onmouseout="this.style.transform='scale(1)'">
+                                <div style="${createAlbumCollage(socialSongs[0]?.song, socialSongs[0]?.track)}"></div>
+                                <div style="position: relative; z-index: 2;">
+                                    <div style="
+                                        display: flex;
+                                        flex-wrap: wrap;
+                                        gap: 10px;
+                                        margin-bottom: 20px;
+                                    ">
+                                        ${socialSongs.map(({song}) => `
+                                            <div style="
+                                                background: rgba(255,255,255,0.25);
+                                                padding: 10px 20px;
+                                                border-radius: 25px;
+                                                font-size: 1rem;
+                                                color: white;
+                                                backdrop-filter: blur(5px);
+                                                box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+                                            ">
+                                                🎵 ${song.split(' by ')[0]}
+                                            </div>
+                                        `).join('')}
+                                    </div>
+                                    <div style="
+                                        color: white;
+                                        font-size: 1.8rem;
+                                        font-weight: 800;
+                                        margin-bottom: 15px;
+                                        text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+                                    ">
+                                        ${personality.social.title}
+                                    </div>
+                                    <div style="
+                                        color: rgba(255,255,255,0.95);
+                                        font-size: 1.2rem;
+                                        line-height: 1.5;
+                                    ">
+                                        ${personality.social.description}
+                                    </div>
+                                    <div style="
+                                        margin-top: 20px;
+                                        padding: 15px;
+                                        background: rgba(255,255,255,0.15);
+                                        border-radius: 15px;
+                                        font-size: 1.1rem;
+                                        color: white;
+                                    ">
+                                        💫 ${personality.social.rarity}
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Emotional Processing -->
+                            <div style="
+                                background: linear-gradient(135deg, #4F9CFF, #6BB5FF);
+                                border-radius: 25px;
+                                padding: 30px;
+                                position: relative;
+                                overflow: hidden;
+                                transform: scale(1);
+                                transition: transform 0.3s ease;
+                                cursor: pointer;
+                            " onmouseover="this.style.transform='scale(1.02)'" onmouseout="this.style.transform='scale(1)'">
+                                <div style="${createAlbumCollage(emotionalSongs[0]?.song, emotionalSongs[0]?.track)}"></div>
+                                <div style="position: relative; z-index: 2;">
+                                    <div style="
+                                        display: flex;
+                                        flex-wrap: wrap;
+                                        gap: 10px;
+                                        margin-bottom: 20px;
+                                    ">
+                                        ${emotionalSongs.map(({song}) => `
+                                            <div style="
+                                                background: rgba(255,255,255,0.25);
+                                                padding: 10px 20px;
+                                                border-radius: 25px;
+                                                font-size: 1rem;
+                                                color: white;
+                                                backdrop-filter: blur(5px);
+                                                box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+                                            ">
+                                                🎵 ${song.split(' by ')[0]}
+                                            </div>
+                                        `).join('')}
+                                    </div>
+                                    <div style="
+                                        color: white;
+                                        font-size: 1.8rem;
+                                        font-weight: 800;
+                                        margin-bottom: 15px;
+                                        text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+                                    ">
+                                        ${personality.emotional.title}
+                                    </div>
+                                    <div style="
+                                        color: rgba(255,255,255,0.95);
+                                        font-size: 1.2rem;
+                                        line-height: 1.5;
+                                    ">
+                                        ${personality.emotional.description}
+                                    </div>
+                                    <div style="
+                                        margin-top: 20px;
+                                        padding: 15px;
+                                        background: rgba(255,255,255,0.15);
+                                        border-radius: 15px;
+                                        font-size: 1.1rem;
+                                        color: white;
+                                    ">
+                                        ✨ ${personality.emotional.rarity}
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Hidden Side -->
+                            <div style="
+                                background: linear-gradient(135deg, #9C4FFF, #B07CFF);
+                                border-radius: 25px;
+                                padding: 30px;
+                                position: relative;
+                                overflow: hidden;
+                                transform: scale(1);
+                                transition: transform 0.3s ease;
+                                cursor: pointer;
+                            " onmouseover="this.style.transform='scale(1.02)'" onmouseout="this.style.transform='scale(1)'">
+                                <div style="${createAlbumCollage(hiddenSongs[0]?.song, hiddenSongs[0]?.track)}"></div>
+                                <div style="position: relative; z-index: 2;">
+                                    <div style="
+                                        display: flex;
+                                        flex-wrap: wrap;
+                                        gap: 10px;
+                                        margin-bottom: 20px;
+                                    ">
+                                        ${hiddenSongs.map(({song}) => `
+                                            <div style="
+                                                background: rgba(255,255,255,0.25);
+                                                padding: 10px 20px;
+                                                border-radius: 25px;
+                                                font-size: 1rem;
+                                                color: white;
+                                                backdrop-filter: blur(5px);
+                                                box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+                                            ">
+                                                🎵 ${song.split(' by ')[0]}
+                                            </div>
+                                        `).join('')}
+                                    </div>
+                                    <div style="
+                                        color: white;
+                                        font-size: 1.8rem;
+                                        font-weight: 800;
+                                        margin-bottom: 15px;
+                                        text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+                                    ">
+                                        ${personality.hidden.title}
+                                    </div>
+                                    <div style="
+                                        color: rgba(255,255,255,0.95);
+                                        font-size: 1.2rem;
+                                        line-height: 1.5;
+                                    ">
+                                        ${personality.hidden.description}
+                                    </div>
+                                    <div style="
+                                        margin-top: 20px;
+                                        padding: 15px;
+                                        background: rgba(255,255,255,0.15);
+                                        border-radius: 15px;
+                                        font-size: 1.1rem;
+                                        color: white;
+                                    ">
+                                        🎭 ${personality.hidden.rarity}
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Life Philosophy -->
+                            <div style="
+                                background: linear-gradient(135deg, #4CAF50, #81C784);
+                                border-radius: 25px;
+                                padding: 30px;
+                                position: relative;
+                                overflow: hidden;
+                                transform: scale(1);
+                                transition: transform 0.3s ease;
+                                cursor: pointer;
+                            " onmouseover="this.style.transform='scale(1.02)'" onmouseout="this.style.transform='scale(1)'">
+                                <div style="${createAlbumCollage(philosophySongs[0]?.song, philosophySongs[0]?.track)}"></div>
+                                <div style="position: relative; z-index: 2;">
+                                    <div style="
+                                        display: flex;
+                                        flex-wrap: wrap;
+                                        gap: 10px;
+                                        margin-bottom: 20px;
+                                    ">
+                                        ${philosophySongs.map(({song}) => `
+                                            <div style="
+                                                background: rgba(255,255,255,0.25);
+                                                padding: 10px 20px;
+                                                border-radius: 25px;
+                                                font-size: 1rem;
+                                                color: white;
+                                                backdrop-filter: blur(5px);
+                                                box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+                                            ">
+                                                🎵 ${song.split(' by ')[0]}
+                                            </div>
+                                        `).join('')}
+                                    </div>
+                                    <div style="
+                                        color: white;
+                                        font-size: 1.8rem;
+                                        font-weight: 800;
+                                        margin-bottom: 15px;
+                                        text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+                                    ">
+                                        ${personality.philosophy.title}
+                                    </div>
+                                    <div style="
+                                        color: rgba(255,255,255,0.95);
+                                        font-size: 1.2rem;
+                                        line-height: 1.5;
+                                    ">
+                                        ${personality.philosophy.description}
+                                    </div>
+                                    <div style="
+                                        margin-top: 20px;
+                                        padding: 15px;
+                                        background: rgba(255,255,255,0.15);
+                                        border-radius: 15px;
+                                        font-size: 1.1rem;
+                                        color: white;
+                                    ">
+                                        🌟 ${personality.philosophy.rarity}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Social Proof Section -->
+                        <div style="
+                            text-align: center;
+                            margin-top: 40px;
+                            padding: 20px;
+                            background: rgba(255, 51, 102, 0.05);
+                            border-radius: 20px;
+                        ">
+                            <div style="font-size: 1.2rem; color: #666; margin-bottom: 15px;">
+                                🔥 <b>87% of people</b> wish they had your personality traits
+                            </div>
+                            <div style="font-size: 1.1rem; color: #888;">
+                                Share this with your bestie and see if they agree 👀
+                            </div>
+                        </div>
+
+                        <!-- Save Button -->
+                        <div style="text-align: center; margin-top: 30px;">
+                            <button onclick="saveImage()" style="
+                                background: linear-gradient(45deg, #6E48AA, #9D50BB);
+                                color: white;
+                                border: none;
+                                padding: 16px 35px;
+                                border-radius: 30px;
+                                cursor: pointer;
+                                font-weight: 600;
+                                font-size: 1.1rem;
+                                transition: all 0.3s ease;
+                                box-shadow: 0 4px 15px rgba(157, 80, 187, 0.4);
+                            ">
+                                Save for Instagram Story 📱
+                            </button>
+                        </div>
+                    </div>
+                `;
+
+                document.getElementById('result').style.display = 'block';
+                window.currentPersonality = personality;
+            });
+        }
+
+        async function saveImage() {
+            const canvas = document.createElement('canvas');
+            canvas.width = 1080;
+            canvas.height = 1920;
+            const ctx = canvas.getContext('2d');
+
+            // Set background gradient
+            const gradient = ctx.createLinearGradient(0, 0, 1080, 1920);
+            gradient.addColorStop(0, '#FFF5F7');
+            gradient.addColorStop(1, '#FFF0F5');
+            ctx.fillStyle = gradient;
+            ctx.fillRect(0, 0, 1080, 1920);
+
+            // Add decorative background pattern
+            ctx.save();
+            const patternGradient = ctx.createLinearGradient(0, 0, 1080, 1920);
+            patternGradient.addColorStop(0, 'rgba(255, 51, 102, 0.05)');
+            patternGradient.addColorStop(0.33, 'rgba(255, 107, 61, 0.05)');
+            patternGradient.addColorStop(0.66, 'rgba(157, 80, 187, 0.05)');
+            patternGradient.addColorStop(1, 'rgba(110, 72, 170, 0.05)');
+            ctx.fillStyle = patternGradient;
+            ctx.fillRect(0, 0, 1080, 1920);
+            ctx.restore();
+
+            // Draw personality title
+            ctx.textAlign = 'center';
+            ctx.font = 'bold 60px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif';
+            const titleGradient = ctx.createLinearGradient(270, 200, 810, 260);
+            titleGradient.addColorStop(0, '#FF3366');
+            titleGradient.addColorStop(1, '#FF6B3D');
+            ctx.fillStyle = titleGradient;
+            ctx.fillText(window.currentPersonality.name, 540, 240);
+
+            // Draw subtitle
+            ctx.font = '32px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif';
+            ctx.fillStyle = '#666';
+            const subtitleWords = window.currentPersonality.subtitle.split(' ');
+            const subtitleLines = [];
+            let currentLine = '';
+            
+            subtitleWords.forEach(word => {
+                if ((currentLine + word).length > 35) {
+                    subtitleLines.push(currentLine.trim());
+                    currentLine = word + ' ';
+                } else {
+                    currentLine += word + ' ';
+                }
+            });
+            if (currentLine) subtitleLines.push(currentLine.trim());
+            
+            subtitleLines.forEach((line, index) => {
+                ctx.fillText(line, 540, 320 + (index * 40));
+            });
+
+            // Draw rarity badge
+            const badgeWidth = 200;
+            const badgeHeight = 50;
+            const badgeX = (1080 - badgeWidth) / 2;
+            const badgeY = 400;
+            
+            ctx.fillStyle = 'rgba(255, 51, 102, 0.1)';
+            ctx.beginPath();
+            ctx.roundRect(badgeX, badgeY, badgeWidth, badgeHeight, 25);
+            ctx.fill();
+            
+            ctx.font = 'bold 28px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif';
+            ctx.fillStyle = '#FF3366';
+            ctx.fillText(`Rarity: ${window.currentPersonality.rarity}`, 540, badgeY + 35);
+
+            // Draw dimension cards
+            const dimensions = [
+                { 
+                    title: window.currentPersonality.baseTraits.social, 
+                    content: window.currentPersonality.dynamicTraits.social.title, 
+                    gradient: ['#FF6B6B', '#FF8E8E'] 
+                },
+                { 
+                    title: window.currentPersonality.baseTraits.emotional, 
+                    content: window.currentPersonality.dynamicTraits.emotional.title, 
+                    gradient: ['#4F9CFF', '#6BB5FF'] 
+                },
+                { 
+                    title: window.currentPersonality.baseTraits.hidden, 
+                    content: window.currentPersonality.dynamicTraits.hidden.title, 
+                    gradient: ['#9C4FFF', '#B07CFF'] 
+                },
+                { 
+                    title: window.currentPersonality.baseTraits.philosophy, 
+                    content: window.currentPersonality.dynamicTraits.philosophy.title, 
+                    gradient: ['#4CAF50', '#81C784'] 
+                }
+            ];
+
+            dimensions.forEach((dim, index) => {
+                const cardY = 550 + (index * 320);
+                
+                // Card background
+                const cardGradient = ctx.createLinearGradient(90, cardY, 990, cardY + 280);
+                cardGradient.addColorStop(0, dim.gradient[0]);
+                cardGradient.addColorStop(1, dim.gradient[1]);
+                ctx.fillStyle = cardGradient;
+                
+                ctx.beginPath();
+                ctx.roundRect(90, cardY, 900, 280, 20);
+                ctx.fill();
+
+                // Card title
+                ctx.font = 'bold 36px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif';
+                ctx.fillStyle = 'white';
+                ctx.fillText(dim.title, 540, cardY + 60);
+
+                // Card content
+                ctx.font = '28px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif';
+                const contentWords = dim.content.split(' ');
+                let line = '';
+                let lineY = cardY + 120;
+
+                contentWords.forEach(word => {
+                    const testLine = line + word + ' ';
+                    const metrics = ctx.measureText(testLine);
+                    
+                    if (metrics.width > 800) {
+                        ctx.fillText(line, 540, lineY);
+                        line = word + ' ';
+                        lineY += 40;
+                    } else {
+                        line = testLine;
+                    }
+                });
+                ctx.fillText(line, 540, lineY);
+            });
+
+            // Add watermark
+            ctx.font = '24px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif';
+            ctx.fillStyle = 'rgba(0,0,0,0.3)';
+            ctx.fillText('pursongality.com', 540, 1880);
+
+            // Convert to image and trigger download
+            const link = document.createElement('a');
+            link.download = 'my-music-personality.png';
+            link.href = canvas.toDataURL('image/png');
+            link.click();
+        }
+
+        window.addEventListener('load', () => {
+            if (new URLSearchParams(window.location.search).get('code')) {
+                connectSpotify();
+            }
+        });
+    </script>
+
+    <!-- Testing Interface -->
+    <div id="testing" style="display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.9); z-index: 1000;">
+        <div style="background: white; margin: 50px auto; padding: 30px; border-radius: 15px; max-width: 500px; max-height: 80vh; overflow-y: auto;">
+            <h2>Test Personality Cards</h2>
+            <div style="margin: 20px 0; display: flex; align-items: center; gap: 10px;">
+                <label style="min-width: 120px;">Energy (0-10):</label>
+                <input type="range" id="energy" min="0" max="10" value="5" step="0.1" style="flex: 1;" 
+                    oninput="document.getElementById('energyNum').value = this.value; document.getElementById('energyVal').textContent = this.value;">
+                <input type="number" id="energyNum" value="5" min="0" max="10" step="0.1" style="width: 70px;"
+                    oninput="document.getElementById('energy').value = this.value; document.getElementById('energyVal').textContent = this.value;">
+                <span id="energyVal" style="min-width: 30px;">5</span>
+            </div>
+            <div style="margin: 20px 0; display: flex; align-items: center; gap: 10px;">
+                <label style="min-width: 120px;">Valence (0-10):</label>
+                <input type="range" id="valence" min="0" max="10" value="5" step="0.1" style="flex: 1;"
+                    oninput="document.getElementById('valenceNum').value = this.value; document.getElementById('valenceVal').textContent = this.value;">
+                <input type="number" id="valenceNum" value="5" min="0" max="10" step="0.1" style="width: 70px;"
+                    oninput="document.getElementById('valence').value = this.value; document.getElementById('valenceVal').textContent = this.value;">
+                <span id="valenceVal" style="min-width: 30px;">5</span>
+            </div>
+            <div style="margin: 20px 0; display: flex; align-items: center; gap: 10px;">
+                <label style="min-width: 120px;">Variety (0-10):</label>
+                <input type="range" id="variety" min="0" max="10" value="5" step="0.1" style="flex: 1;"
+                    oninput="document.getElementById('varietyNum').value = this.value; document.getElementById('varietyVal').textContent = this.value;">
+                <input type="number" id="varietyNum" value="5" min="0" max="10" step="0.1" style="width: 70px;"
+                    oninput="document.getElementById('variety').value = this.value; document.getElementById('varietyVal').textContent = this.value;">
+                <span id="varietyVal" style="min-width: 30px;">5</span>
+            </div>
+            <div style="margin: 20px 0; display: flex; align-items: center; gap: 10px;">
+                <label style="min-width: 120px;">Acousticness (0-10):</label>
+                <input type="range" id="acousticness" min="0" max="10" value="5" step="0.1" style="flex: 1;"
+                    oninput="document.getElementById('acousticnessNum').value = this.value; document.getElementById('acousticnessVal').textContent = this.value;">
+                <input type="number" id="acousticnessNum" value="5" min="0" max="10" step="0.1" style="width: 70px;"
+                    oninput="document.getElementById('acousticness').value = this.value; document.getElementById('acousticnessVal').textContent = this.value;">
+                <span id="acousticnessVal" style="min-width: 30px;">5</span>
+            </div>
+            <div style="margin: 20px 0; display: flex; align-items: center; gap: 10px;">
+                <label style="min-width: 120px;">Complexity (0-10):</label>
+                <input type="range" id="complexity" min="0" max="10" value="5" step="0.1" style="flex: 1;"
+                    oninput="document.getElementById('complexityNum').value = this.value; document.getElementById('complexityVal').textContent = this.value;">
+                <input type="number" id="complexityNum" value="5" min="0" max="10" step="0.1" style="width: 70px;"
+                    oninput="document.getElementById('complexity').value = this.value; document.getElementById('complexityVal').textContent = this.value;">
+                <span id="complexityVal" style="min-width: 30px;">5</span>
+            </div>
+            <div style="margin: 20px 0; display: flex; align-items: center; gap: 10px;">
+                <label style="min-width: 120px;">Danceability (0-10):</label>
+                <input type="range" id="danceability" min="0" max="10" value="5" step="0.1" style="flex: 1;"
+                    oninput="document.getElementById('danceabilityNum').value = this.value; document.getElementById('danceabilityVal').textContent = this.value;">
+                <input type="number" id="danceabilityNum" value="5" min="0" max="10" step="0.1" style="width: 70px;"
+                    oninput="document.getElementById('danceability').value = this.value; document.getElementById('danceabilityVal').textContent = this.value;">
+                <span id="danceabilityVal" style="min-width: 30px;">5</span>
+            </div>
+            <div style="display: flex; gap: 10px; margin-top: 30px;">
+                <button onclick="generateTestPersonality()" style="flex: 1; background: #FF3366; color: white; padding: 12px 20px; border: none; border-radius: 8px; font-weight: bold;">Generate</button>
+                <button onclick="document.getElementById('testing').style.display='none'" style="flex: 1; background: #666; color: white; padding: 12px 20px; border: none; border-radius: 8px;">Close</button>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

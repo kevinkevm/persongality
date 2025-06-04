@@ -1,0 +1,12 @@
+{
+  "name": "spotify-personality-app",
+  "version": "1.0.0",
+  "description": "Discover your personality through Spotify data",
+  "main": "index.html",
+  "scripts": {
+    "start": "python3 -m http.server 3000",
+    "dev": "python3 -m http.server 3000"
+  },
+  "keywords": ["spotify", "personality", "music"],
+  "author": "Your Name"
+}
