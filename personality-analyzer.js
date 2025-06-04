@@ -534,33 +534,11 @@ class PersonalityAnalyzer {
 function showTesting() {
     document.getElementById('testing').style.display = 'block';
     
-    // Update display values when sliders or number inputs change
+    // Update display values when sliders change
     ['energy', 'valence', 'variety', 'acousticness', 'complexity', 'danceability'].forEach(id => {
         const slider = document.getElementById(id);
-        const numberInput = document.getElementById(id + 'Num');
         const display = document.getElementById(id + 'Val');
-        
-        // Set initial values
-        slider.value = "5";
-        numberInput.value = "5";
-        display.textContent = "5";
-        
-        // Add event listeners
-        slider.oninput = () => {
-            numberInput.value = slider.value;
-            display.textContent = slider.value;
-        };
-        
-        numberInput.oninput = () => {
-            // Ensure the value is within bounds
-            let value = parseFloat(numberInput.value);
-            if (value < 0) value = 0;
-            if (value > 10) value = 10;
-            
-            slider.value = value;
-            display.textContent = value;
-            numberInput.value = value;
-        };
+        slider.oninput = () => display.textContent = slider.value;
     });
 }
 
@@ -622,11 +600,34 @@ function showTestResult(personality) {
     window.currentPersonality = personality;
     
     document.getElementById('result').innerHTML = `
-        <div class="result-container" style="position: relative; max-width: 800px; margin: 0 auto; background: rgba(255, 255, 255, 0.98); padding: 40px; border-radius: 30px; box-shadow: 0 10px 30px rgba(0,0,0,0.2);">
-            <div style="text-align: center; margin-bottom: 40px;">
-                <div style="font-size: 2rem; color: #666; margin-bottom: 25px; font-style: italic;">Your Musical Personality Analysis</div>
+        <div class="result-container" style="position: relative; max-width: 800px; margin: 0 auto; background: rgba(255, 255, 255, 0.98); padding: clamp(15px, 4vw, 40px); border-radius: clamp(20px, 4vw, 30px); box-shadow: 0 10px 30px rgba(0,0,0,0.2);">
+            <!-- Title Section -->
+            <div class="title-container" style="text-align: center; margin-bottom: 40px;">
+                <h1 class="main-title" style="
+                    font-size: clamp(2rem, 5vw, 2.5rem);
+                    font-weight: 800;
+                    background: linear-gradient(45deg, #FF3366, #FF6B3D, #9D50BB);
+                    -webkit-background-clip: text;
+                    background-clip: text;
+                    -webkit-text-fill-color: transparent;
+                    margin-bottom: 10px;
+                    text-transform: uppercase;
+                    letter-spacing: -0.5px;
+                    position: relative;
+                    display: inline-block;
+                    padding: 0 10px;
+                    text-shadow: 3px 3px 6px rgba(0,0,0,0.1);
+                ">YOUR PERSONGALITY</h1>
+                <div style="
+                    font-size: clamp(1rem, 3vw, 1.2rem);
+                    color: #666;
+                    font-weight: 400;
+                    margin-top: 5px;
+                    opacity: 0.9;
+                ">Your soul's musical fingerprint ✨</div>
             </div>
-            
+
+            <!-- 4 Dimensions Section -->
             <div style="display: flex; flex-direction: column; gap: 15px;">
                 <div style="background: linear-gradient(135deg, #FF6B6B, #FF8E8E); border-radius: 25px; padding: 30px;">
                     <div style="color: white; font-size: 1.8rem; font-weight: 800; margin-bottom: 15px;">${personality.social.title}</div>
@@ -774,6 +775,66 @@ async function saveImage() {
     link.download = 'my-music-personality.png';
     link.href = canvas.toDataURL('image/png');
     link.click();
+}
+
+// Move the Spotify connection logic to window load
+window.addEventListener('load', async () => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const code = urlParams.get('code');
+    
+    if (code) {
+        // Remove code from URL immediately
+        window.history.replaceState({}, document.title, window.location.pathname);
+        
+        document.querySelector('.btn').style.display = 'none';
+        document.getElementById('loading').style.display = 'block';
+
+        try {
+            const tokenData = await getAccessToken(code);
+            accessToken = tokenData.access_token;
+            
+            const tracks = await getTopTracks();
+            console.log('Got tracks:', tracks);
+            
+            let features = null;
+            try {
+                features = await getAudioFeatures(tracks.items.map(t => t.id));
+                console.log('Got audio features:', features);
+            } catch (audioError) {
+                console.log('Audio features failed, using track data instead:', audioError);
+            }
+            
+            const personality = personalityAnalyzer.analyzePersonality(features?.audio_features, tracks.items);
+            showResult(personality, tracks.items);
+        } catch (error) {
+            console.error('Error:', error);
+            document.getElementById('loading').style.display = 'none';
+            document.querySelector('.btn').style.display = 'inline-block';
+        }
+    }
+});
+
+async function connectSpotify() {
+    // Only handle the initial connection request
+    if (window.location.search.includes('code=')) {
+        return; // Let the load handler deal with the redirect
+    }
+
+    localStorage.clear();
+    const verifier = generateCodeVerifier();
+    const challenge = await generateCodeChallenge(verifier);
+    localStorage.setItem('code_verifier', verifier);
+
+    const params = new URLSearchParams({
+        client_id: CLIENT_ID,
+        response_type: 'code',
+        redirect_uri: REDIRECT_URI,
+        scope: 'user-top-read user-read-private user-library-read playlist-read-private',
+        code_challenge_method: 'S256',
+        code_challenge: challenge
+    }).toString();
+
+    window.location.href = 'https://accounts.spotify.com/authorize?' + params;
 }
 
 // Export for use in other files
