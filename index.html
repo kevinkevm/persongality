@@ -3,8 +3,6 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>What Does Your Music Say About You?</title>
-    <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
     <script src="personality-analyzer.js"></script>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -192,30 +190,234 @@
         }
         @media (max-width: 480px) {
             body {
-                padding: 15px;
+                padding: 40px 0 20px;
+                min-height: auto;
                 background: #FFF5F7;
             }
             .container {
-                padding: 0;
+                padding: 0 !important;
                 background: transparent;
                 box-shadow: none;
+                margin: 0;
+                width: 100%;
+                max-width: 430px;
             }
             .result {
                 margin: 0;
-                padding: 25px 20px;
+                padding: 0;
+                max-width: 430px !important;
+                background: transparent;
+            }
+            .result-container {
+                padding: 10px !important;
+                margin: 0 !important;
+                border-radius: 0 !important;
+                box-shadow: none !important;
+                background: transparent !important;
+            }
+            /* Landing page adjustments */
+            #landing {
+                padding: 20px 15px;
+            }
+            .logo {
+                margin-bottom: 8px;
+                height: 40px !important;
+            }
+            .title-container {
+                margin-bottom: 15px;
+            }
+            .main-title {
+                font-size: 1.6rem !important;
+                margin-bottom: 4px;
+            }
+            .subtitle {
+                font-size: 0.9rem !important;
+                padding: 0 8px;
             }
             .btn {
                 display: block;
-                margin: 10px auto;
+                margin: 6px auto;
+                max-width: 340px;
+                padding: 10px 20px !important;
+                font-size: 0.95rem !important;
             }
-            .action-buttons {
+
+            /* Dimension cards */
+            .dimension-section {
+                gap: 6px !important;
+            }
+            .dimension-card {
+                padding: 12px !important;
+                margin-bottom: 6px !important;
+                border-radius: 16px !important;
+            }
+            /* Song chips container */
+            .song-chips-container {
+                margin-bottom: 8px !important;
                 display: flex;
-                flex-direction: column;
-                gap: 10px;
+                flex-wrap: wrap;
+                gap: 4px !important;
             }
-            .action-buttons button {
-                margin: 0;
+            /* Song chips */
+            .song-chip {
+                font-size: 0.8rem !important;
+                padding: 4px 10px !important;
+                margin: 0 !important;
+                border-radius: 12px !important;
+            }
+            /* Card content */
+            .personality-card-title {
+                font-size: 1.3rem !important;
+                margin-bottom: 6px !important;
+            }
+            .personality-card-description {
+                font-size: 0.9rem !important;
+                line-height: 1.3 !important;
+                margin-bottom: 8px !important;
+            }
+            .personality-card-rarity {
+                font-size: 0.85rem !important;
+                padding: 8px !important;
+                margin-top: 8px !important;
+                border-radius: 10px !important;
+            }
+
+            /* Social proof section */
+            .social-proof {
+                margin-top: 15px !important;
+                padding: 12px !important;
+                border-radius: 12px !important;
+            }
+            .social-proof-text {
+                font-size: 0.85rem !important;
+                margin-bottom: 6px !important;
+            }
+            .social-proof-text:last-child {
+                margin-bottom: 0 !important;
+            }
+
+            /* Album art adjustments */
+            .album-art {
+                width: 40px !important;
+                height: 40px !important;
+                margin-right: 8px !important;
+            }
+
+            /* Personality Card Styles */
+            .personality-card {
+                padding: 12px !important;
+                margin-bottom: 6px !important;
+                border-radius: 16px !important;
+            }
+
+            .personality-card-title {
+                color: white;
+                font-size: 1.2rem !important;
+                font-weight: 800;
+                margin-bottom: 4px !important;
+                text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
+            }
+
+            .personality-card-description {
+                color: rgba(255,255,255,0.95);
+                font-size: 0.85rem !important;
+                line-height: 1.2 !important;
+                margin-bottom: 6px !important;
+            }
+
+            .personality-card-rarity {
+                margin-top: 6px !important;
+                padding: 6px 10px !important;
+                background: rgba(255,255,255,0.15);
+                border-radius: 10px !important;
+                font-size: 0.8rem !important;
+                color: white;
+            }
+
+            /* Song chips */
+            .song-chips-container {
+                display: flex;
+                flex-wrap: wrap;
+                gap: 4px !important;
+                margin-bottom: 6px !important;
+            }
+
+            .song-chip {
+                background: rgba(255,255,255,0.2);
+                padding: 4px 8px !important;
+                border-radius: 10px !important;
+                font-size: 0.75rem !important;
+                color: white;
+                backdrop-filter: blur(5px);
+                box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            }
+
+            /* Album art */
+            .album-collage {
+                position: absolute;
+                top: 0;
+                right: 0;
                 width: 100%;
+                height: 100%;
+                opacity: 0.08;
+                mix-blend-mode: soft-light;
+            }
+
+            /* Personality Card Styles */
+            .personality-card {
+                padding: 12px !important;
+                margin-bottom: 6px !important;
+                border-radius: 16px !important;
+            }
+
+            .personality-card-title {
+                color: white;
+                font-size: 1.2rem !important;
+                font-weight: 800;
+                margin-bottom: 4px !important;
+                text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
+            }
+
+            .personality-card-description {
+                color: rgba(255,255,255,0.95);
+                font-size: 0.85rem !important;
+                line-height: 1.2 !important;
+                margin-bottom: 6px !important;
+            }
+
+            .personality-card-rarity {
+                margin-top: 6px !important;
+                padding: 6px 10px !important;
+                background: rgba(255,255,255,0.15);
+                border-radius: 10px !important;
+                font-size: 0.8rem !important;
+                color: white;
+            }
+
+            /* Song chips */
+            .song-chips-container {
+                display: flex;
+                flex-wrap: wrap;
+                gap: 4px !important;
+                margin-bottom: 6px !important;
+            }
+
+            .song-chip {
+                background: rgba(255,255,255,0.2);
+                padding: 4px 8px !important;
+                border-radius: 10px !important;
+                font-size: 0.75rem !important;
+                color: white;
+                backdrop-filter: blur(5px);
+                box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            }
+
+            /* Social proof section */
+            .social-proof {
+                margin-top: 12px !important;
+                padding: 10px !important;
+                text-align: center;
+                font-size: 0.85rem !important;
             }
         }
         @media (max-width: 380px) {
@@ -261,6 +463,52 @@
                 max-width: 750px !important;
             }
         }
+
+        /* Story size optimization */
+        @media (min-width: 1080px) {
+            body {
+                padding: 120px 0;  /* Add padding for URL bar and bottom space */
+                min-height: 1920px;
+                background: #FFF5F7;
+            }
+            .container {
+                width: 1080px !important;
+                max-width: 1080px !important;
+                padding: 40px !important;
+                margin: 0 auto;
+            }
+            .result {
+                max-width: 1000px !important;
+                margin: 0 auto;
+            }
+            .result-container {
+                max-width: 1000px !important;
+                padding: 40px !important;
+            }
+            /* Adjust font sizes for story size */
+            .main-title {
+                font-size: 3rem !important;
+            }
+            .subtitle {
+                font-size: 1.5rem !important;
+            }
+            .dimension-title {
+                font-size: 2rem !important;
+            }
+            .dimension-content {
+                font-size: 1.3rem !important;
+            }
+            /* Adjust card spacing */
+            .dimension-card {
+                padding: 35px !important;
+                margin-bottom: 25px !important;
+            }
+            /* Adjust song chips */
+            .song-chip {
+                font-size: 1.2rem !important;
+                padding: 12px 25px !important;
+            }
+        }
     </style>
 </head>
 <body>
@@ -268,7 +516,7 @@
         <div id="landing">
             <div class="logo">✨</div>
             <div class="title-container">
-                <h1 class="main-title">PERSONGALITY</h1>
+                <h1 class="main-title   ">PERSONGALITY</h1>
                 <div class="subtitle">Discover what your playlist reveals about your soul</div>
             </div>
             <button class="btn" onclick="connectSpotify()">Connect Your Spotify</button>
@@ -303,30 +551,22 @@
                     <span id="personalityCode" style="background: rgba(255,255,255,0.2); padding: 5px 15px; border-radius: 15px; font-weight: bold;"></span>
                 </div>
                 <div id="traits"></div>
-                <button onclick="saveImage()" style="
-                    background: linear-gradient(45deg, #6E48AA, #9D50BB);
-                    color: white;
-                    border: none;
-                    padding: 16px 35px;
-                    border-radius: 30px;
-                    cursor: pointer;
-                    font-weight: 600;
-                    font-size: 1.1rem;
-                    transition: all 0.3s ease;
-                    box-shadow: 0 4px 15px rgba(157, 80, 187, 0.4);
-                    display: block;
-                    margin: 20px auto;
-                    max-width: 300px;
-                ">
-                    Save for Instagram Story 📱
-                </button>
+                <div style="text-align: center; margin-top: 40px;">
+                    <div style="font-size: 1.2rem; color: #666; margin-bottom: 15px;">
+                        🔥 <b>87% of people</b> wish they had your personality traits
+                    </div>
+                    <div style="font-size: 1.1rem; color: #888;">
+                        Share this with your bestie and see if they agree 👀
+                    </div>
+                </div>
             </div>
         </div>
+        
     </div>
 
     <script>
         const CLIENT_ID = 'a657acb2c038484aa0283ed48eda8803';
-        const REDIRECT_URI = 'http://127.0.0.1:3000/';
+        const REDIRECT_URI = 'https://740b-103-179-177-18.ngrok-free.app/';
         const SCOPES = 'user-top-read user-read-recently-played user-read-playback-state';
 
         let accessToken = null;
@@ -609,10 +849,10 @@
                         </div>
 
                         <!-- 4 Dimensions Section -->
-                        <div style="display: flex; flex-direction: column; gap: 15px;">
+                        <div class="dimension-section" style="display: flex; flex-direction: column; gap: 15px;">
                             <!-- Social Role -->
-                            <div style="
-                                background: linear-gradient(135deg, #FF6B6B, #FF8E8E);
+                            <div class="personality-card" style="
+                                background: linear-gradient(135deg, #E85757, #E06666);
                                 border-radius: 25px;
                                 padding: 30px;
                                 position: relative;
@@ -620,61 +860,25 @@
                                 transform: scale(1);
                                 transition: transform 0.3s ease;
                                 cursor: pointer;
-                            " onmouseover="this.style.transform='scale(1.02)'" onmouseout="this.style.transform='scale(1)'">
+                            ">
                                 <div style="${createAlbumCollage(socialSongs[0]?.song, socialSongs[0]?.track)}"></div>
                                 <div style="position: relative; z-index: 2;">
-                                    <div style="
-                                        display: flex;
-                                        flex-wrap: wrap;
-                                        gap: 10px;
-                                        margin-bottom: 20px;
-                                    ">
+                                    <div class="song-chips-container">
                                         ${socialSongs.map(({song}) => `
-                                            <div style="
-                                                background: rgba(255,255,255,0.25);
-                                                padding: 10px 20px;
-                                                border-radius: 25px;
-                                                font-size: 1rem;
-                                                color: white;
-                                                backdrop-filter: blur(5px);
-                                                box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-                                            ">
+                                            <div class="song-chip">
                                                 🎵 ${song.split(' by ')[0]}
                                             </div>
                                         `).join('')}
                                     </div>
-                                    <div style="
-                                        color: white;
-                                        font-size: 1.8rem;
-                                        font-weight: 800;
-                                        margin-bottom: 15px;
-                                        text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
-                                    ">
-                                        ${personality.social.title}
-                                    </div>
-                                    <div style="
-                                        color: rgba(255,255,255,0.95);
-                                        font-size: 1.2rem;
-                                        line-height: 1.5;
-                                    ">
-                                        ${personality.social.description}
-                                    </div>
-                                    <div style="
-                                        margin-top: 20px;
-                                        padding: 15px;
-                                        background: rgba(255,255,255,0.15);
-                                        border-radius: 15px;
-                                        font-size: 1.1rem;
-                                        color: white;
-                                    ">
-                                        💫 ${personality.social.rarity}
-                                    </div>
+                                    <h2 class="personality-card-title">The Silent Supporter ⭐</h2>
+                                    <p class="personality-card-description">Your presence alone makes chaotic situations feel manageable</p>
+                                    <div class="personality-card-rarity">✨ Part of the top 12% most calming people</div>
                                 </div>
                             </div>
 
-                            <!-- Emotional Processing -->
-                            <div style="
-                                background: linear-gradient(135deg, #4F9CFF, #6BB5FF);
+                            <!-- Emotional Role -->
+                            <div class="personality-card" style="
+                                background: linear-gradient(135deg, #3A7BC7, #4B8CD4);
                                 border-radius: 25px;
                                 padding: 30px;
                                 position: relative;
@@ -682,61 +886,25 @@
                                 transform: scale(1);
                                 transition: transform 0.3s ease;
                                 cursor: pointer;
-                            " onmouseover="this.style.transform='scale(1.02)'" onmouseout="this.style.transform='scale(1)'">
+                            ">
                                 <div style="${createAlbumCollage(emotionalSongs[0]?.song, emotionalSongs[0]?.track)}"></div>
                                 <div style="position: relative; z-index: 2;">
-                                    <div style="
-                                        display: flex;
-                                        flex-wrap: wrap;
-                                        gap: 10px;
-                                        margin-bottom: 20px;
-                                    ">
+                                    <div class="song-chips-container">
                                         ${emotionalSongs.map(({song}) => `
-                                            <div style="
-                                                background: rgba(255,255,255,0.25);
-                                                padding: 10px 20px;
-                                                border-radius: 25px;
-                                                font-size: 1rem;
-                                                color: white;
-                                                backdrop-filter: blur(5px);
-                                                box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-                                            ">
+                                            <div class="song-chip">
                                                 🎵 ${song.split(' by ')[0]}
                                             </div>
                                         `).join('')}
                                     </div>
-                                    <div style="
-                                        color: white;
-                                        font-size: 1.8rem;
-                                        font-weight: 800;
-                                        margin-bottom: 15px;
-                                        text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
-                                    ">
-                                        ${personality.emotional.title}
-                                    </div>
-                                    <div style="
-                                        color: rgba(255,255,255,0.95);
-                                        font-size: 1.2rem;
-                                        line-height: 1.5;
-                                    ">
-                                        ${personality.emotional.description}
-                                    </div>
-                                    <div style="
-                                        margin-top: 20px;
-                                        padding: 15px;
-                                        background: rgba(255,255,255,0.15);
-                                        border-radius: 15px;
-                                        font-size: 1.1rem;
-                                        color: white;
-                                    ">
-                                        ✨ ${personality.emotional.rarity}
-                                    </div>
+                                    <h2 class="personality-card-title">The Mood Master 🎭</h2>
+                                    <p class="personality-card-description">Your emotional processing is consistent - you know what works for you</p>
+                                    <div class="personality-card-rarity">✨ Only 13% are this emotionally stable</div>
                                 </div>
                             </div>
 
-                            <!-- Hidden Side -->
-                            <div style="
-                                background: linear-gradient(135deg, #9C4FFF, #B07CFF);
+                            <!-- Hidden Role -->
+                            <div class="personality-card" style="
+                                background: linear-gradient(135deg, #8522A3, #9B2BB7);
                                 border-radius: 25px;
                                 padding: 30px;
                                 position: relative;
@@ -744,153 +912,63 @@
                                 transform: scale(1);
                                 transition: transform 0.3s ease;
                                 cursor: pointer;
-                            " onmouseover="this.style.transform='scale(1.02)'" onmouseout="this.style.transform='scale(1)'">
+                            ">
                                 <div style="${createAlbumCollage(hiddenSongs[0]?.song, hiddenSongs[0]?.track)}"></div>
                                 <div style="position: relative; z-index: 2;">
-                                    <div style="
-                                        display: flex;
-                                        flex-wrap: wrap;
-                                        gap: 10px;
-                                        margin-bottom: 20px;
-                                    ">
+                                    <div class="song-chips-container">
                                         ${hiddenSongs.map(({song}) => `
-                                            <div style="
-                                                background: rgba(255,255,255,0.25);
-                                                padding: 10px 20px;
-                                                border-radius: 25px;
-                                                font-size: 1rem;
-                                                color: white;
-                                                backdrop-filter: blur(5px);
-                                                box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-                                            ">
+                                            <div class="song-chip">
                                                 🎵 ${song.split(' by ')[0]}
                                             </div>
                                         `).join('')}
                                     </div>
-                                    <div style="
-                                        color: white;
-                                        font-size: 1.8rem;
-                                        font-weight: 800;
-                                        margin-bottom: 15px;
-                                        text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
-                                    ">
-                                        ${personality.hidden.title}
-                                    </div>
-                                    <div style="
-                                        color: rgba(255,255,255,0.95);
-                                        font-size: 1.2rem;
-                                        line-height: 1.5;
-                                    ">
-                                        ${personality.hidden.description}
-                                    </div>
-                                    <div style="
-                                        margin-top: 20px;
-                                        padding: 15px;
-                                        background: rgba(255,255,255,0.15);
-                                        border-radius: 15px;
-                                        font-size: 1.1rem;
-                                        color: white;
-                                    ">
-                                        🎭 ${personality.hidden.rarity}
-                                    </div>
+                                    <h2 class="personality-card-title">The Secret Softie 🥺</h2>
+                                    <p class="personality-card-description">Acts tough but cries during pet adoption commercials</p>
+                                    <div class="personality-card-rarity">🎭 Only 11% have this duality</div>
                                 </div>
                             </div>
 
-                            <!-- Life Philosophy -->
-                            <div style="
-                                background: linear-gradient(135deg, #4CAF50, #81C784);
+                            <!-- Philosophy Role -->
+                            <div class="personality-card" style="
+                                background: linear-gradient(135deg, #3B9B4F, #45B65C);
                                 border-radius: 25px;
-                                padding: 30px;
+                                padding: 12px;
                                 position: relative;
                                 overflow: hidden;
                                 transform: scale(1);
                                 transition: transform 0.3s ease;
                                 cursor: pointer;
-                            " onmouseover="this.style.transform='scale(1.02)'" onmouseout="this.style.transform='scale(1)'">
+                            ">
                                 <div style="${createAlbumCollage(philosophySongs[0]?.song, philosophySongs[0]?.track)}"></div>
                                 <div style="position: relative; z-index: 2;">
-                                    <div style="
-                                        display: flex;
-                                        flex-wrap: wrap;
-                                        gap: 10px;
-                                        margin-bottom: 20px;
-                                    ">
+                                    <div class="song-chips-container">
                                         ${philosophySongs.map(({song}) => `
-                                            <div style="
-                                                background: rgba(255,255,255,0.25);
-                                                padding: 10px 20px;
-                                                border-radius: 25px;
-                                                font-size: 1rem;
-                                                color: white;
-                                                backdrop-filter: blur(5px);
-                                                box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-                                            ">
+                                            <div class="song-chip">
                                                 🎵 ${song.split(' by ')[0]}
                                             </div>
                                         `).join('')}
                                     </div>
-                                    <div style="
-                                        color: white;
-                                        font-size: 1.8rem;
-                                        font-weight: 800;
-                                        margin-bottom: 15px;
-                                        text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
-                                    ">
-                                        ${personality.philosophy.title}
-                                    </div>
-                                    <div style="
-                                        color: rgba(255,255,255,0.95);
-                                        font-size: 1.2rem;
-                                        line-height: 1.5;
-                                    ">
-                                        ${personality.philosophy.description}
-                                    </div>
-                                    <div style="
-                                        margin-top: 20px;
-                                        padding: 15px;
-                                        background: rgba(255,255,255,0.15);
-                                        border-radius: 15px;
-                                        font-size: 1.1rem;
-                                        color: white;
-                                    ">
-                                        🌟 ${personality.philosophy.rarity}
-                                    </div>
+                                    <h2 class="personality-card-title">The Wisdom Weaver</h2>
+                                    <p class="personality-card-description">You think the best conversations happen with live music in the background</p>
+                                    <div class="personality-card-rarity">⭐ Only 13% connect ideas this way</div>
                                 </div>
                             </div>
                         </div>
 
                         <!-- Social Proof Section -->
-                        <div style="
+                        <div class="social-proof" style="
                             text-align: center;
                             margin-top: 40px;
                             padding: 20px;
                             background: rgba(255, 51, 102, 0.05);
                             border-radius: 20px;
                         ">
-                            <div style="font-size: 1.2rem; color: #666; margin-bottom: 15px;">
+                            <div class="social-proof-text" style="font-size: 1.2rem; color: #666; margin-bottom: 15px;">
                                 🔥 <b>87% of people</b> wish they had your personality traits
                             </div>
-                            <div style="font-size: 1.1rem; color: #888;">
+                            <div class="social-proof-text" style="font-size: 1.1rem; color: #888;">
                                 Share this with your bestie and see if they agree 👀
                             </div>
-                        </div>
-
-                        <!-- Save Button -->
-                        <div style="text-align: center; margin-top: 30px;">
-                            <button onclick="saveImage()" style="
-                                background: linear-gradient(45deg, #6E48AA, #9D50BB);
-                                color: white;
-                                border: none;
-                                padding: 16px 35px;
-                                border-radius: 30px;
-                                cursor: pointer;
-                                font-weight: 600;
-                                font-size: 1.1rem;
-                                transition: all 0.3s ease;
-                                box-shadow: 0 4px 15px rgba(157, 80, 187, 0.4);
-                            ">
-                                Save for Instagram Story 📱
-                            </button>
                         </div>
                     </div>
                 `;
@@ -900,149 +978,7 @@
             });
         }
 
-        async function saveImage() {
-            const canvas = document.createElement('canvas');
-            canvas.width = 1080;
-            canvas.height = 1920;
-            const ctx = canvas.getContext('2d');
-
-            // Set background gradient
-            const gradient = ctx.createLinearGradient(0, 0, 1080, 1920);
-            gradient.addColorStop(0, '#FFF5F7');
-            gradient.addColorStop(1, '#FFF0F5');
-            ctx.fillStyle = gradient;
-            ctx.fillRect(0, 0, 1080, 1920);
-
-            // Add decorative background pattern
-            ctx.save();
-            const patternGradient = ctx.createLinearGradient(0, 0, 1080, 1920);
-            patternGradient.addColorStop(0, 'rgba(255, 51, 102, 0.05)');
-            patternGradient.addColorStop(0.33, 'rgba(255, 107, 61, 0.05)');
-            patternGradient.addColorStop(0.66, 'rgba(157, 80, 187, 0.05)');
-            patternGradient.addColorStop(1, 'rgba(110, 72, 170, 0.05)');
-            ctx.fillStyle = patternGradient;
-            ctx.fillRect(0, 0, 1080, 1920);
-            ctx.restore();
-
-            // Draw personality title
-            ctx.textAlign = 'center';
-            ctx.font = 'bold 60px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif';
-            const titleGradient = ctx.createLinearGradient(270, 200, 810, 260);
-            titleGradient.addColorStop(0, '#FF3366');
-            titleGradient.addColorStop(1, '#FF6B3D');
-            ctx.fillStyle = titleGradient;
-            ctx.fillText(window.currentPersonality.name, 540, 240);
-
-            // Draw subtitle
-            ctx.font = '32px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif';
-            ctx.fillStyle = '#666';
-            const subtitleWords = window.currentPersonality.subtitle.split(' ');
-            const subtitleLines = [];
-            let currentLine = '';
-            
-            subtitleWords.forEach(word => {
-                if ((currentLine + word).length > 35) {
-                    subtitleLines.push(currentLine.trim());
-                    currentLine = word + ' ';
-                } else {
-                    currentLine += word + ' ';
-                }
-            });
-            if (currentLine) subtitleLines.push(currentLine.trim());
-            
-            subtitleLines.forEach((line, index) => {
-                ctx.fillText(line, 540, 320 + (index * 40));
-            });
-
-            // Draw rarity badge
-            const badgeWidth = 200;
-            const badgeHeight = 50;
-            const badgeX = (1080 - badgeWidth) / 2;
-            const badgeY = 400;
-            
-            ctx.fillStyle = 'rgba(255, 51, 102, 0.1)';
-            ctx.beginPath();
-            ctx.roundRect(badgeX, badgeY, badgeWidth, badgeHeight, 25);
-            ctx.fill();
-            
-            ctx.font = 'bold 28px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif';
-            ctx.fillStyle = '#FF3366';
-            ctx.fillText(`Rarity: ${window.currentPersonality.rarity}`, 540, badgeY + 35);
-
-            // Draw dimension cards
-            const dimensions = [
-                { 
-                    title: window.currentPersonality.baseTraits.social, 
-                    content: window.currentPersonality.dynamicTraits.social.title, 
-                    gradient: ['#FF6B6B', '#FF8E8E'] 
-                },
-                { 
-                    title: window.currentPersonality.baseTraits.emotional, 
-                    content: window.currentPersonality.dynamicTraits.emotional.title, 
-                    gradient: ['#4F9CFF', '#6BB5FF'] 
-                },
-                { 
-                    title: window.currentPersonality.baseTraits.hidden, 
-                    content: window.currentPersonality.dynamicTraits.hidden.title, 
-                    gradient: ['#9C4FFF', '#B07CFF'] 
-                },
-                { 
-                    title: window.currentPersonality.baseTraits.philosophy, 
-                    content: window.currentPersonality.dynamicTraits.philosophy.title, 
-                    gradient: ['#4CAF50', '#81C784'] 
-                }
-            ];
-
-            dimensions.forEach((dim, index) => {
-                const cardY = 550 + (index * 320);
-                
-                // Card background
-                const cardGradient = ctx.createLinearGradient(90, cardY, 990, cardY + 280);
-                cardGradient.addColorStop(0, dim.gradient[0]);
-                cardGradient.addColorStop(1, dim.gradient[1]);
-                ctx.fillStyle = cardGradient;
-                
-                ctx.beginPath();
-                ctx.roundRect(90, cardY, 900, 280, 20);
-                ctx.fill();
-
-                // Card title
-                ctx.font = 'bold 36px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif';
-                ctx.fillStyle = 'white';
-                ctx.fillText(dim.title, 540, cardY + 60);
-
-                // Card content
-                ctx.font = '28px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif';
-                const contentWords = dim.content.split(' ');
-                let line = '';
-                let lineY = cardY + 120;
-
-                contentWords.forEach(word => {
-                    const testLine = line + word + ' ';
-                    const metrics = ctx.measureText(testLine);
-                    
-                    if (metrics.width > 800) {
-                        ctx.fillText(line, 540, lineY);
-                        line = word + ' ';
-                        lineY += 40;
-                    } else {
-                        line = testLine;
-                    }
-                });
-                ctx.fillText(line, 540, lineY);
-            });
-
-            // Add watermark
-            ctx.font = '24px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif';
-            ctx.fillStyle = 'rgba(0,0,0,0.3)';
-            ctx.fillText('pursongality.com', 540, 1880);
-
-            // Convert to image and trigger download
-            const link = document.createElement('a');
-            link.download = 'my-music-personality.png';
-            link.href = canvas.toDataURL('image/png');
-            link.click();
-        }
+        
 
         window.addEventListener('load', () => {
             if (new URLSearchParams(window.location.search).get('code')) {
