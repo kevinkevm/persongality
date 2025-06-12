@@ -775,10 +775,9 @@
 
         async function showResult(personality, tracks) {
             document.getElementById('landing').style.display = 'none';
-            
+
             // Get top artists for the collage
             getTopArtists(accessToken).then(artists => {
-                // Function to create album art collage style
                 function createAlbumCollage(songs, track) {
                     if (!track || !track.album || !track.album.images || !track.album.images[0]) {
                         return 'background: rgba(0,0,0,0.1);';
@@ -802,6 +801,12 @@
                 const emotionalSongs = personalityAnalyzer.getSongExamplesForDimension(tracks, 'emotional', socialSongs.map(s => s.song), 3);
                 const hiddenSongs = personalityAnalyzer.getSongExamplesForDimension(tracks, 'hidden', [...socialSongs, ...emotionalSongs].map(s => s.song), 3);
                 const philosophySongs = personalityAnalyzer.getSongExamplesForDimension(tracks, 'philosophy', [...socialSongs, ...emotionalSongs, ...hiddenSongs].map(s => s.song), 3);
+
+                // Use dynamic trait info from the analyzer result
+                const socialTrait = personality.social;
+                const emotionalTrait = personality.emotional;
+                const hiddenTrait = personality.hidden;
+                const philosophyTrait = personality.philosophy;
 
                 document.getElementById('result').innerHTML = `
                     <div class="result-container" style="
@@ -840,9 +845,9 @@
                                             </div>
                                         `).join('')}
                                     </div>
-                                    <h2 class="personality-card-title">The Silent Supporter ⭐</h2>
-                                    <p class="personality-card-description">Your presence alone makes chaotic situations feel manageable</p>
-                                    <div class="personality-card-rarity">✨ Part of the top 12% most calming people</div>
+                                    <h2 class="personality-card-title">${socialTrait.title}</h2>
+                                    <p class="personality-card-description">${socialTrait.description}</p>
+                                    <div class="personality-card-rarity">${socialTrait.rarity}</div>
                                 </div>
                             </div>
 
@@ -866,9 +871,9 @@
                                             </div>
                                         `).join('')}
                                     </div>
-                                    <h2 class="personality-card-title">The Mood Master 🎭</h2>
-                                    <p class="personality-card-description">Your emotional processing is consistent - you know what works for you</p>
-                                    <div class="personality-card-rarity">✨ Only 13% are this emotionally stable</div>
+                                    <h2 class="personality-card-title">${emotionalTrait.title}</h2>
+                                    <p class="personality-card-description">${emotionalTrait.description}</p>
+                                    <div class="personality-card-rarity">${emotionalTrait.rarity}</div>
                                 </div>
                             </div>
 
@@ -892,9 +897,9 @@
                                             </div>
                                         `).join('')}
                                     </div>
-                                    <h2 class="personality-card-title">The Secret Softie 🥺</h2>
-                                    <p class="personality-card-description">Acts tough but cries during pet adoption commercials</p>
-                                    <div class="personality-card-rarity">🎭 Only 11% have this duality</div>
+                                    <h2 class="personality-card-title">${hiddenTrait.title}</h2>
+                                    <p class="personality-card-description">${hiddenTrait.description}</p>
+                                    <div class="personality-card-rarity">${hiddenTrait.rarity}</div>
                                 </div>
                             </div>
 
@@ -918,9 +923,9 @@
                                             </div>
                                         `).join('')}
                                     </div>
-                                    <h2 class="personality-card-title">The Wisdom Weaver</h2>
-                                    <p class="personality-card-description">You think the best conversations happen with live music in the background</p>
-                                    <div class="personality-card-rarity">⭐ Only 13% connect ideas this way</div>
+                                    <h2 class="personality-card-title">${philosophyTrait.title}</h2>
+                                    <p class="personality-card-description">${philosophyTrait.description}</p>
+                                    <div class="personality-card-rarity">${philosophyTrait.rarity}</div>
                                 </div>
                             </div>
                         </div>
