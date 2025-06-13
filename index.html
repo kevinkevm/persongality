@@ -23,13 +23,17 @@
             justify-content: center;
         }
         .container {
-            padding: 0 !important;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            width: 100%;
+            max-width: 430px;
+            margin: 0 auto;
             background: transparent;
             box-shadow: none;
-            margin: 0;
-            width: 100%;
-            max-width: 3000px;
-            text-align: center;
+            padding: 0 !important;
         }
         .result, .result-container {
             max-width: 30000px !important;
@@ -58,7 +62,11 @@
             background: transparent !important;
         }
         #landing {
-            padding: 20px 15px;
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
         }
         .logo {
             margin-bottom: 8px;
@@ -70,6 +78,7 @@
         .main-title {
             font-size: 1.6rem !important;
             margin-bottom: 4px;
+            text-align: center;
         }
         .subtitle {
             font-size: 0.9rem !important;
@@ -650,8 +659,59 @@
             const response = await fetch('https://api.spotify.com/v1/me/top/tracks?limit=20', {
                 headers: { 'Authorization': `Bearer ${accessToken}` }
             });
-            if (!response.ok) throw new Error('Failed to get tracks');
+            if (!response.ok) {
+                // Try to get the error message from Spotify
+                let errorText = '';
+                try {
+                    errorText = await response.text();
+                } catch (e) {}
+                // Check for insufficient data
+                if (errorText && errorText.includes('Insufficient data')) {
+                    showInsufficientDataError();
+                } else {
+                    showInsufficientDataError(); // fallback for all 403s
+                }
+                throw new Error('Failed to get tracks');
+            }
             return response.json();
+        }
+
+        // Add this function to show the error screen
+        function showInsufficientDataError() {
+            document.getElementById('landing').style.display = 'none';
+            document.getElementById('result').style.display = 'none';
+            let errorDiv = document.getElementById('insufficient-data-error');
+            if (!errorDiv) {
+                errorDiv = document.createElement('div');
+                errorDiv.id = 'insufficient-data-error';
+                errorDiv.style = `
+                    display: flex;
+                    flex-direction: column;
+                    align-items: center;
+                    justify-content: center;
+                    min-height: 60vh;
+                    background: #fff5f7;
+                    border-radius: 24px;
+                    box-shadow: 0 8px 32px rgba(0,0,0,0.08);
+                    padding: 40px 24px;
+                    max-width: 400px;
+                    margin: 40px auto;
+                `;
+                errorDiv.innerHTML = `
+                    <div style="font-size: 3rem; margin-bottom: 18px;">😢</div>
+                    <h2 style="color: #e85757; margin-bottom: 12px; text-align: center;">Insufficient Listening Data</h2>
+                    <div style="color: #b36b6b; font-size: 1.1rem; text-align: center; margin-bottom: 18px;">
+                        Either you have not listened to enough music on Spotify,<br>
+                        or you have been listening in a private session.<br>
+                        <br>
+                        Try listening to more music with private session <b>off</b> and come back later!
+                    </div>
+                    <button onclick="location.reload()" style="background: #FF3366; color: white; padding: 10px 24px; border: none; border-radius: 8px; font-size: 1rem; margin-top: 10px;">Try Again</button>
+                `;
+                document.body.appendChild(errorDiv);
+            } else {
+                errorDiv.style.display = 'flex';
+            }
         }
 
         async function getAudioFeatures(trackIds) {
