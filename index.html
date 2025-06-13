@@ -23,17 +23,13 @@
             justify-content: center;
         }
         .container {
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            width: 100%;
-            max-width: 430px;
-            margin: 0 auto;
+            padding: 0 !important;
             background: transparent;
             box-shadow: none;
-            padding: 0 !important;
+            margin: 0;
+            width: 100%;
+            max-width: 3000px;
+            text-align: center;
         }
         .result, .result-container {
             max-width: 30000px !important;
@@ -62,12 +58,14 @@
             background: transparent !important;
         }
         #landing {
-            width: 100%;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
+        padding: 20px 15px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        min-height: 100vh;
         }
+
         .logo {
             margin-bottom: 8px;
             height: 40px !important;
@@ -78,7 +76,6 @@
         .main-title {
             font-size: 1.6rem !important;
             margin-bottom: 4px;
-            text-align: center;
         }
         .subtitle {
             font-size: 0.9rem !important;
@@ -431,7 +428,7 @@
                 text-align: center;
                 font-size: 0.85rem !important;
             }
-        
+
         @media (max-width: 380px) {
             .dimension-title {
                 font-size: 0.9rem !important;
@@ -484,7 +481,7 @@
             background: transparent !important;
         }
 
-        /* Center the error screen absolutely */
+        /* Error screen styling */
         #insufficient-data-error {
             position: fixed;
             top: 0; left: 0; right: 0; bottom: 0;
@@ -516,8 +513,13 @@
                 justify-content: center;
                 gap: 10px;
             ">
-                    
+
             </button>
+            <button class="btn" onclick="testErrorScreen()" style="
+                background: linear-gradient(45deg, #FF6B6B, #FF8E53);
+                margin-top: 10px;
+                font-size: 0.9rem;
+            ">Test Error Screen</button>
             <div class="loading" id="loading">
                 <div class="spinner"></div>
                 <p><b> Analyzing your musical soul... </b></p>
@@ -546,12 +548,12 @@
                 </div>
             </div>
         </div>
-        
+
     </div>
 
     <script>
         const CLIENT_ID = 'a657acb2c038484aa0283ed48eda8803';
-        const REDIRECT_URI = 'https://persongality.com/';
+        const REDIRECT_URI = 'http://persongalitiy.com/';
         const SCOPES = 'user-top-read user-read-recently-played user-read-playback-state';
 
         let accessToken = null;
@@ -582,32 +584,71 @@
                 document.getElementById('loading').style.display = 'block';
 
                 try {
+                    console.log('=== STARTING SPOTIFY LOGIN FLOW ===');
                     const tokenData = await getAccessToken(code);
                     accessToken = tokenData.access_token;
-                    
-                    const tracks = await getTopTracks();
-                    console.log('Got tracks:', tracks);
-                    
-                    let features = null;
+                    console.log('✓ Got access token');
+
+                    let tracks;
                     try {
-                        features = await getAudioFeatures(tracks.items.map(t => t.id));
-                        console.log('Got audio features:', features);
-                    } catch (audioError) {
-                        console.log('Audio features failed, using track data instead:', audioError);
+                        tracks = await getTopTracks();
+                        console.log('✓ Got tracks:', tracks);
+                        console.log('Track count:', tracks.items?.length || 0);
+                    } catch (tracksError) {
+                        if (tracksError.message === 'INSUFFICIENT_DATA') {
+                            console.log('❌ INSUFFICIENT LISTENING DATA FROM SPOTIFY - Showing error screen');
+                            document.getElementById('loading').style.display = 'none';
+                            setTimeout(() => showError(), 100);
+                            return;
+                        }
+                        throw tracksError; // Re-throw if it's not insufficient data
                     }
                     
+                    // Check if we have enough tracks
+                    if (!tracks.items || tracks.items.length < 5) {
+                        console.log('❌ INSUFFICIENT TRACKS - Showing error screen');
+                        console.log('Track count:', tracks.items?.length || 0);
+                        document.getElementById('loading').style.display = 'none';
+                        setTimeout(() => showError(), 100); // Small delay to ensure loading is hidden
+                        return;
+                    }
+
+                    let features = null;
+                    try {
+                        console.log('Attempting to get audio features...');
+                        features = await getAudioFeatures(tracks.items.map(t => t.id));
+                        console.log('✓ Got audio features:', features);
+                        
+                        // Check if we have enough matched features
+                        if (!features || !features.audio_features || features.audio_features.length < 3) {
+                            console.log('❌ INSUFFICIENT AUDIO FEATURES - Showing error screen');
+                            console.log('Audio features count:', features?.audio_features?.length || 0);
+                            document.getElementById('loading').style.display = 'none';
+                            setTimeout(() => showError(), 100); // Small delay to ensure loading is hidden
+                            return;
+                        }
+                        
+                    } catch (audioError) {
+                        console.log('❌ AUDIO FEATURES FAILED - Showing error screen');
+                        console.error('Audio features error:', audioError);
+                        document.getElementById('loading').style.display = 'none';
+                        setTimeout(() => showError(), 100); // Small delay to ensure loading is hidden
+                        return;
+                    }
+
+                    console.log('✓ All checks passed, showing results');
                     const personality = personalityAnalyzer.analyzePersonality(features?.audio_features, tracks.items);
                     showResult(personality, tracks.items);
                 } catch (error) {
-                    console.error('Error:', error);
-                    alert('Error: ' + error.message);
+                    console.log('❌ GENERAL ERROR - Showing error screen');
+                    console.error('General error:', error);
                     document.getElementById('loading').style.display = 'none';
-                    document.querySelector('.btn').style.display = 'inline-block';
+                    setTimeout(() => showError(), 100); // Small delay to ensure loading is hidden
                 }
             } else {
                 // Clear localStorage only when starting fresh authentication
                 localStorage.clear();
-                
+
                 const verifier = generateCodeVerifier();
                 const challenge = await generateCodeChallenge(verifier);
                 localStorage.setItem('code_verifier', verifier);
@@ -625,77 +666,27 @@
             }
         }
 
-        async function getAccessToken(code) {
-            const verifier = localStorage.getItem('code_verifier');
-    
-            if (!verifier) {
-                console.error('No code verifier found in localStorage');
-                throw new Error('Authentication error: Missing code verifier');
-            }
-    
-            const params = new URLSearchParams({
-                client_id: CLIENT_ID,
-                grant_type: 'authorization_code',
-                code: code,
-                redirect_uri: REDIRECT_URI,
-                code_verifier: verifier
-            });
-
-            try {
-                console.log('Requesting token with params:', {
-                    code: code.substring(0, 10) + '...',
-                    redirect_uri: REDIRECT_URI,
-                    verifier_length: verifier.length
-                });
-                
-                const response = await fetch('https://accounts.spotify.com/api/token', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-                    body: params
-                });
-
-                console.log('Token response status:', response.status);
-        
-                if (!response.ok) {
-                    const errorText = await response.text();
-                    console.error('Token error response:', errorText);
-                    throw new Error(`Token request failed (${response.status}): ${errorText}`);
-                }
-        
-                return response.json();
-            } catch (error) {
-                console.error('Token fetch error:', error);
-                throw error;
-            }
-        }
-
-        async function getTopTracks() {
-            const response = await fetch('https://api.spotify.com/v1/me/top/tracks?limit=20', {
-                headers: { 'Authorization': `Bearer ${accessToken}` }
-            });
-            if (!response.ok) {
-                // Try to get the error message from Spotify
-                let errorText = '';
-                try {
-                    errorText = await response.text();
-                } catch (e) {}
-                // Check for insufficient data
-                if (errorText && errorText.includes('Insufficient data')) {
-                    showInsufficientDataError();
-                } else {
-                    showInsufficientDataError(); // fallback for all 403s
-                }
-                throw new Error('Failed to get tracks');
-            }
-            return response.json();
-        }
-
-        // Add this function to show the error screen
-        function showInsufficientDataError() {
-            document.getElementById('landing').style.display = 'none';
-            document.getElementById('result').style.display = 'none';
+        function showError() {
+            console.log('🚨 showError() function called');
+            console.log('Current URL:', window.location.href);
+            console.log('Landing element:', document.getElementById('landing'));
+            console.log('Result element:', document.getElementById('result'));
+            console.log('Loading element:', document.getElementById('loading'));
+            
+            // Hide all other elements
+            const landing = document.getElementById('landing');
+            const result = document.getElementById('result');
+            const loading = document.getElementById('loading');
+            
+            if (landing) landing.style.display = 'none';
+            if (result) result.style.display = 'none';
+            if (loading) loading.style.display = 'none';
+            
             let errorDiv = document.getElementById('insufficient-data-error');
+            console.log('Existing error div:', errorDiv);
+            
             if (!errorDiv) {
+                console.log('Creating new error div');
                 errorDiv = document.createElement('div');
                 errorDiv.id = 'insufficient-data-error';
                 errorDiv.innerHTML = `
@@ -720,49 +711,167 @@
                         <button onclick="location.reload()" style="background: #FF3366; color: white; padding: 10px 24px; border: none; border-radius: 8px; font-size: 1rem; margin-top: 10px;">Try Again</button>
                     </div>
                 `;
+                console.log('Appending error div to body');
                 document.body.appendChild(errorDiv);
+                console.log('Error div appended, checking if visible');
+                console.log('Error div style:', window.getComputedStyle(errorDiv));
             } else {
+                console.log('Showing existing error div');
                 errorDiv.style.display = 'flex';
             }
         }
 
+        // Test function - you can call this from console: testErrorScreen()
+        function testErrorScreen() {
+            console.log('Testing error screen manually');
+            showError();
+        }
+        
+        // Make it globally available for console testing
+        window.testErrorScreen = testErrorScreen;
+        
+        // Make showError globally available so it can be called from personality-analyzer.js
+        window.showInsufficientDataError = function() {
+            console.log('🚨 showInsufficientDataError called from external script');
+            document.getElementById('loading').style.display = 'none';
+            setTimeout(() => showError(), 100);
+        };
+
+        // Global error handler for insufficient data
+        window.addEventListener('error', function(event) {
+            if (event.error && event.error.message === 'INSUFFICIENT_DATA') {
+                console.log('🚨 Global error handler caught INSUFFICIENT_DATA');
+                document.getElementById('loading').style.display = 'none';
+                setTimeout(() => showError(), 100);
+                event.preventDefault();
+            }
+        });
+
+        // Also handle unhandled promise rejections
+        window.addEventListener('unhandledrejection', function(event) {
+            if (event.reason && event.reason.message === 'INSUFFICIENT_DATA') {
+                console.log('🚨 Unhandled rejection handler caught INSUFFICIENT_DATA');
+                document.getElementById('loading').style.display = 'none';
+                setTimeout(() => showError(), 100);
+                event.preventDefault();
+            }
+        });
+
+        async function getAccessToken(code) {
+            const verifier = localStorage.getItem('code_verifier');
+
+            if (!verifier) {
+                console.error('No code verifier found in localStorage');
+                throw new Error('Authentication error: Missing code verifier');
+            }
+
+            const params = new URLSearchParams({
+                client_id: CLIENT_ID,
+                grant_type: 'authorization_code',
+                code: code,
+                redirect_uri: REDIRECT_URI,
+                code_verifier: verifier
+            });
+
+            try {
+                console.log('Requesting token with params:', {
+                    code: code.substring(0, 10) + '...',
+                    redirect_uri: REDIRECT_URI,
+                    verifier_length: verifier.length
+                });
+
+                const response = await fetch('https://accounts.spotify.com/api/token', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                    body: params
+                });
+
+                console.log('Token response status:', response.status);
+
+                if (!response.ok) {
+                    const errorText = await response.text();
+                    console.error('Token error response:', errorText);
+                    throw new Error(`Token request failed (${response.status}): ${errorText}`);
+                }
+
+                return response.json();
+            } catch (error) {
+                console.error('Token fetch error:', error);
+                throw error;
+            }
+        }
+
+        async function getTopTracks() {
+            const response = await fetch('https://api.spotify.com/v1/me/top/tracks?limit=20', {
+                headers: { 'Authorization': `Bearer ${accessToken}` }
+            });
+            
+            if (!response.ok) {
+                console.error('Failed to get tracks, status:', response.status);
+                
+                // Handle 403 specifically - this means insufficient listening data
+                if (response.status === 403) {
+                    console.log('❌ 403 FORBIDDEN - Insufficient listening data from Spotify');
+                    // Directly show error screen instead of throwing
+                    if (window.showInsufficientDataError) {
+                        window.showInsufficientDataError();
+                        return { items: [] }; // Return empty to prevent further processing
+                    }
+                    throw new Error('INSUFFICIENT_DATA');
+                }
+                
+                throw new Error('Failed to get tracks');
+            }
+            
+            const data = await response.json();
+            console.log('Raw tracks response:', data);
+            
+            // Check if we actually have tracks
+            if (!data.items || data.items.length === 0) {
+                console.log('No tracks found in response');
+                throw new Error('INSUFFICIENT_DATA');
+            }
+            
+            return data;
+        }
+
         async function getAudioFeatures(trackIds) {
             console.log('Looking up audio features from local data for tracks:', trackIds);
-            
+
             try {
                 const response = await fetch('/spotify2023.csv');
                 const csvText = await response.text();
-                
+
                 // Parse CSV data
                 const rows = csvText.split('\n')
                     .filter(row => row.trim());
-                
+
                 const headers = rows[0].split(',');
                 const data = rows.slice(1).map(row => row.split(','));
-                
+
                 // Get track names from Spotify API
                 const tracksResponse = await fetch('https://api.spotify.com/v1/tracks?ids=' + trackIds.join(','), {
                     headers: { 'Authorization': `Bearer ${accessToken}` }
                 });
-                
+
                 if (!tracksResponse.ok) {
                     throw new Error('Failed to get track names from Spotify');
                 }
-                
+
                 const tracksData = await tracksResponse.json();
                 console.log('Got track names:', tracksData);
-                
+
                 // Find matching tracks in CSV
                 const audioFeatures = [];
                 let matchedCount = 0;
-                
+
                 for (const track of tracksData.tracks) {
                     const trackName = track.name;
                     console.log(`Looking for match for: "${trackName}"`);
-                    
+
                     // Find matching row in CSV by exact track name
                     const matchingRow = data.find(row => row[0] === trackName);
-                    
+
                     if (matchingRow) {
                         console.log(`Found match for "${trackName}"`);
                         matchedCount++;
@@ -779,24 +888,24 @@
                         console.log(`No match found for track: "${trackName}"`);
                     }
                 }
-                
+
                 const totalTracks = tracksData.tracks.length;
                 const matchRatio = matchedCount / totalTracks;
                 console.log(`Found matches for ${matchedCount} out of ${totalTracks} tracks (${(matchRatio * 100).toFixed(1)}%)`);
-                
+
                 if (audioFeatures.length === 0) {
                     throw new Error('No matching tracks found in database');
                 }
-                
+
                 // Calculate confidence weight based on match ratio
                 // If we find all tracks, weight = 1
                 // If we find minimum tracks (1), weight = 0.3
                 // Scale linearly between these points
                 const minWeight = 0.3;
                 const confidenceWeight = minWeight + (1 - minWeight) * matchRatio;
-                
+
                 console.log(`Confidence weight based on matches: ${confidenceWeight.toFixed(2)}`);
-                
+
                 // Add confidence weight to the response
                 return { 
                     audio_features: audioFeatures,
@@ -847,9 +956,11 @@
 
         async function showResult(personality, tracks) {
             document.getElementById('landing').style.display = 'none';
+            
 
             // Get top artists for the collage
             getTopArtists(accessToken).then(artists => {
+
                 function createAlbumCollage(songs, track) {
                     if (!track || !track.album || !track.album.images || !track.album.images[0]) {
                         return 'background: rgba(0,0,0,0.1);';
@@ -1025,7 +1136,14 @@
             });
         }
 
+        // Test function - you can call this from console: testErrorScreen()
+        function testErrorScreen() {
+            console.log('Testing error screen manually');
+            showError();
+        }
         
+        // Make it globally available for console testing
+        window.testErrorScreen = testErrorScreen;
 
         window.addEventListener('load', () => {
             if (new URLSearchParams(window.location.search).get('code')) {
