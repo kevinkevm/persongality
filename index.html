@@ -483,6 +483,20 @@
             box-shadow: none !important;
             background: transparent !important;
         }
+
+        /* Center the error screen absolutely */
+        #insufficient-data-error {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            display: flex !important;
+            align-items: center;
+            justify-content: center;
+            background: #fff5f7;
+            z-index: 9999;
+        }
+        #insufficient-data-error > div {
+            box-shadow: 0 8px 32px rgba(0,0,0,0.08);
+        }
     </style>
 </head>
 <body>
@@ -684,29 +698,27 @@
             if (!errorDiv) {
                 errorDiv = document.createElement('div');
                 errorDiv.id = 'insufficient-data-error';
-                errorDiv.style = `
-                    display: flex;
-                    flex-direction: column;
-                    align-items: center;
-                    justify-content: center;
-                    min-height: 60vh;
-                    background: #fff5f7;
-                    border-radius: 24px;
-                    box-shadow: 0 8px 32px rgba(0,0,0,0.08);
-                    padding: 40px 24px;
-                    max-width: 400px;
-                    margin: 40px auto;
-                `;
                 errorDiv.innerHTML = `
-                    <div style="font-size: 3rem; margin-bottom: 18px;">😢</div>
-                    <h2 style="color: #e85757; margin-bottom: 12px; text-align: center;">Insufficient Listening Data</h2>
-                    <div style="color: #b36b6b; font-size: 1.1rem; text-align: center; margin-bottom: 18px;">
-                        Either you have not listened to enough music on Spotify,<br>
-                        or you have been listening in a private session.<br>
-                        <br>
-                        Try listening to more music with private session <b>off</b> and come back later!
+                    <div style="
+                        display: flex;
+                        flex-direction: column;
+                        align-items: center;
+                        justify-content: center;
+                        min-width: 280px;
+                        max-width: 400px;
+                        padding: 40px 24px;
+                        border-radius: 24px;
+                        background: #fff;
+                    ">
+                        <div style="font-size: 3rem; margin-bottom: 18px;">🥲</div>
+                        <h2 style="color: #e85757; margin-bottom: 12px; text-align: center;">Insufficient<br>Listening Data</h2>
+                        <div style="color: #b36b6b; font-size: 1.1rem; text-align: center; margin-bottom: 18px;">
+                            Either you have not listened to enough music on Spotify,<br>
+                            or you have been listening in a private session.<br><br>
+                            Try listening to more music with private session <b>off</b> and come back later!
+                        </div>
+                        <button onclick="location.reload()" style="background: #FF3366; color: white; padding: 10px 24px; border: none; border-radius: 8px; font-size: 1rem; margin-top: 10px;">Try Again</button>
                     </div>
-                    <button onclick="location.reload()" style="background: #FF3366; color: white; padding: 10px 24px; border: none; border-radius: 8px; font-size: 1rem; margin-top: 10px;">Try Again</button>
                 `;
                 document.body.appendChild(errorDiv);
             } else {
