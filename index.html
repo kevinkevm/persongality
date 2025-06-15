@@ -505,21 +505,9 @@
                 <div class="subtitle">Discover what your playlist reveals about your soul</div>
             </div>
             <button class="btn" onclick="connectSpotify()">Connect Your Spotify</button>
-            <button class="btn" onclick="showTesting()" style="
-                background: linear-gradient(45deg, #6E48AA, #9D50BB);
-                margin-top: 15px;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                gap: 10px;
-            ">
+
 
             </button>
-            <button class="btn" onclick="testErrorScreen()" style="
-                background: linear-gradient(45deg, #FF6B6B, #FF8E53);
-                margin-top: 10px;
-                font-size: 0.9rem;
-            ">Test Error Screen</button>
             <div class="loading" id="loading">
                 <div class="spinner"></div>
                 <p><b> Analyzing your musical soul... </b></p>
@@ -553,7 +541,7 @@
 
     <script>
         const CLIENT_ID = 'a657acb2c038484aa0283ed48eda8803';
-        const REDIRECT_URI = 'https://persongality.com/';
+        const REDIRECT_URI = 'http://127.0.0.1:3000/';
         const SCOPES = 'user-top-read user-read-recently-played user-read-playback-state';
 
         let accessToken = null;
@@ -585,6 +573,8 @@
 
                 try {
                     console.log('=== STARTING SPOTIFY LOGIN FLOW ===');
+                    console.log('Redirect URI being used:', REDIRECT_URI);
+                    console.log('Authorization code received:', code.substring(0, 20) + '...');
                     const tokenData = await getAccessToken(code);
                     accessToken = tokenData.access_token;
                     console.log('✓ Got access token');
@@ -791,6 +781,14 @@
                 if (!response.ok) {
                     const errorText = await response.text();
                     console.error('Token error response:', errorText);
+                    console.error('Token request failed for user - this might be a Spotify app permissions issue');
+                    
+                    // Check if it's a user permission issue
+                    if (response.status === 400 && errorText.includes('invalid_grant')) {
+                        console.error('❌ INVALID GRANT - User might not be authorized to use this app');
+                        console.error('💡 Solution: Add user to Spotify app dashboard or request quota extension');
+                    }
+                    
                     throw new Error(`Token request failed (${response.status}): ${errorText}`);
                 }
 
