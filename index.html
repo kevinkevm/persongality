@@ -563,96 +563,78 @@
         }
 
         async function connectSpotify() {
-            const urlParams = new URLSearchParams(window.location.search);
-            const code = urlParams.get('code');
+            // Show API deprecation screen immediately
+            showApiDeprecationScreen();
+        }
 
-            if (code) {
-                // We're in the callback flow - don't clear localStorage
-                document.querySelector('.btn').style.display = 'none';
-                document.getElementById('loading').style.display = 'block';
-
-                try {
-                    console.log('=== STARTING SPOTIFY LOGIN FLOW ===');
-                    console.log('Redirect URI being used:', REDIRECT_URI);
-                    console.log('Authorization code received:', code.substring(0, 20) + '...');
-                    const tokenData = await getAccessToken(code);
-                    accessToken = tokenData.access_token;
-                    console.log('✓ Got access token');
-
-                    let tracks;
-                    try {
-                        tracks = await getTopTracks();
-                        console.log('✓ Got tracks:', tracks);
-                        console.log('Track count:', tracks.items?.length || 0);
-                    } catch (tracksError) {
-                        if (tracksError.message === 'INSUFFICIENT_DATA') {
-                            console.log('❌ INSUFFICIENT LISTENING DATA FROM SPOTIFY - Showing error screen');
-                            document.getElementById('loading').style.display = 'none';
-                            setTimeout(() => showError(), 100);
-                            return;
-                        }
-                        throw tracksError; // Re-throw if it's not insufficient data
-                    }
-                    
-                    // Check if we have enough tracks
-                    if (!tracks.items || tracks.items.length < 5) {
-                        console.log('❌ INSUFFICIENT TRACKS - Showing error screen');
-                        console.log('Track count:', tracks.items?.length || 0);
-                        document.getElementById('loading').style.display = 'none';
-                        setTimeout(() => showError(), 100); // Small delay to ensure loading is hidden
-                        return;
-                    }
-
-                    let features = null;
-                    try {
-                        console.log('Attempting to get audio features...');
-                        features = await getAudioFeatures(tracks.items.map(t => t.id));
-                        console.log('✓ Got audio features:', features);
-                        
-                        // Check if we have enough matched features
-                        if (!features || !features.audio_features || features.audio_features.length < 3) {
-                            console.log('❌ INSUFFICIENT AUDIO FEATURES - Showing error screen');
-                            console.log('Audio features count:', features?.audio_features?.length || 0);
-                            document.getElementById('loading').style.display = 'none';
-                            setTimeout(() => showError(), 100); // Small delay to ensure loading is hidden
-                            return;
-                        }
-                        
-                    } catch (audioError) {
-                        console.log('❌ AUDIO FEATURES FAILED - Showing error screen');
-                        console.error('Audio features error:', audioError);
-                        document.getElementById('loading').style.display = 'none';
-                        setTimeout(() => showError(), 100); // Small delay to ensure loading is hidden
-                        return;
-                    }
-
-                    console.log('✓ All checks passed, showing results');
-                    const personality = personalityAnalyzer.analyzePersonality(features?.audio_features, tracks.items);
-                    showResult(personality, tracks.items);
-                } catch (error) {
-                    console.log('❌ GENERAL ERROR - Showing error screen');
-                    console.error('General error:', error);
-                    document.getElementById('loading').style.display = 'none';
-                    setTimeout(() => showError(), 100); // Small delay to ensure loading is hidden
-                }
+        function showApiDeprecationScreen() {
+            console.log('🚨 showApiDeprecationScreen() function called');
+            
+            // Hide all other elements
+            const landing = document.getElementById('landing');
+            const result = document.getElementById('result');
+            const loading = document.getElementById('loading');
+            
+            if (landing) landing.style.display = 'none';
+            if (result) result.style.display = 'none';
+            if (loading) loading.style.display = 'none';
+            
+            let errorDiv = document.getElementById('api-deprecation-error');
+            
+            if (!errorDiv) {
+                console.log('Creating API deprecation screen');
+                errorDiv = document.createElement('div');
+                errorDiv.id = 'api-deprecation-error';
+                errorDiv.style.cssText = `
+                    position: fixed;
+                    top: 0; left: 0; right: 0; bottom: 0;
+                    display: flex !important;
+                    align-items: center;
+                    justify-content: center;
+                    background: #fff5f7;
+                    z-index: 9999;
+                `;
+                errorDiv.innerHTML = `
+                    <div style="
+                        display: flex;
+                        flex-direction: column;
+                        align-items: center;
+                        justify-content: center;
+                        min-width: 320px;
+                        max-width: 450px;
+                        padding: 50px 30px;
+                        border-radius: 24px;
+                        background: #fff;
+                        box-shadow: 0 8px 32px rgba(0,0,0,0.08);
+                        text-align: center;
+                    ">
+                        <div style="font-size: 4rem; margin-bottom: 20px;">😔</div>
+                        <h2 style="color: #e85757; margin-bottom: 15px; font-size: 1.8rem; font-weight: 800;">Service Discontinued</h2>
+                        <div style="color: #8a6b6b; font-size: 1.1rem; line-height: 1.5; margin-bottom: 20px;">
+                            We're sorry to inform you that <strong>Persongality</strong> is no longer available.
+                        </div>
+                        <div style="color: #b36b6b; font-size: 1rem; line-height: 1.6; margin-bottom: 25px;">
+                            As of <strong>May 15th, 2025</strong>, Spotify changed their API policies and no longer allows independent developers to access the data needed for apps like this.
+                        </div>
+                        <div style="color: #b36b6b; font-size: 1rem; line-height: 1.6; margin-bottom: 30px;">
+                            Thank you for your interest in discovering your musical personality. We apologize for any inconvenience.
+                        </div>
+                        <div style="
+                            background: rgba(255, 51, 102, 0.05);
+                            padding: 15px 20px;
+                            border-radius: 12px;
+                            border-left: 4px solid #FF3366;
+                            color: #8a6b6b;
+                            font-size: 0.9rem;
+                            font-style: italic;
+                        ">
+                            "Music was my refuge. I could crawl into the space between the notes and curl my back to loneliness." - Maya Angelou
+                        </div>
+                    </div>
+                `;
+                document.body.appendChild(errorDiv);
             } else {
-                // Clear localStorage only when starting fresh authentication
-                localStorage.clear();
-
-                const verifier = generateCodeVerifier();
-                const challenge = await generateCodeChallenge(verifier);
-                localStorage.setItem('code_verifier', verifier);
-
-                const params = new URLSearchParams({
-                    client_id: CLIENT_ID,
-                    response_type: 'code',
-                    redirect_uri: REDIRECT_URI,
-                    scope: 'user-top-read user-read-private user-library-read playlist-read-private',
-                    code_challenge_method: 'S256',
-                    code_challenge: challenge
-                }).toString();
-
-                window.location.href = 'https://accounts.spotify.com/authorize?' + params;
+                errorDiv.style.display = 'flex';
             }
         }
 
@@ -1144,9 +1126,8 @@
         window.testErrorScreen = testErrorScreen;
 
         window.addEventListener('load', () => {
-            if (new URLSearchParams(window.location.search).get('code')) {
-                connectSpotify();
-            }
+            // Always show API deprecation screen on load
+            showApiDeprecationScreen();
         });
     </script>
 
