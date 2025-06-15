@@ -567,76 +567,299 @@
             showApiDeprecationScreen();
         }
 
-        function showApiDeprecationScreen() {
-            console.log('🚨 showApiDeprecationScreen() function called');
-            
-            // Hide all other elements
-            const landing = document.getElementById('landing');
-            const result = document.getElementById('result');
-            const loading = document.getElementById('loading');
-            
-            if (landing) landing.style.display = 'none';
-            if (result) result.style.display = 'none';
-            if (loading) loading.style.display = 'none';
-            
-            let errorDiv = document.getElementById('api-deprecation-error');
-            
-            if (!errorDiv) {
-                console.log('Creating API deprecation screen');
-                errorDiv = document.createElement('div');
-                errorDiv.id = 'api-deprecation-error';
-                errorDiv.style.cssText = `
-                    position: fixed;
-                    top: 0; left: 0; right: 0; bottom: 0;
-                    display: flex !important;
-                    align-items: center;
-                    justify-content: center;
-                    background: #fff5f7;
-                    z-index: 9999;
-                `;
-                errorDiv.innerHTML = `
-                    <div style="
-                        display: flex;
-                        flex-direction: column;
-                        align-items: center;
-                        justify-content: center;
-                        min-width: 320px;
-                        max-width: 450px;
-                        padding: 50px 30px;
-                        border-radius: 24px;
-                        background: #fff;
-                        box-shadow: 0 8px 32px rgba(0,0,0,0.08);
-                        text-align: center;
-                    ">
-                        <div style="font-size: 4rem; margin-bottom: 20px;">😔</div>
-                        <h2 style="color: #e85757; margin-bottom: 15px; font-size: 1.8rem; font-weight: 800;">Service Discontinued</h2>
-                        <div style="color: #8a6b6b; font-size: 1.1rem; line-height: 1.5; margin-bottom: 20px;">
-                            We're sorry to inform you that <strong>Persongality</strong> is no longer available.
-                        </div>
-                        <div style="color: #b36b6b; font-size: 1rem; line-height: 1.6; margin-bottom: 25px;">
-                            As of <strong>May 15th, 2025</strong>, Spotify changed their API policies and no longer allows independent developers to access the data needed for apps like this.
-                        </div>
-                        <div style="color: #b36b6b; font-size: 1rem; line-height: 1.6; margin-bottom: 30px;">
-                            Thank you for your interest in discovering your musical personality. We apologize for any inconvenience.
-                        </div>
-                        <div style="
-                            background: rgba(255, 51, 102, 0.05);
-                            padding: 15px 20px;
-                            border-radius: 12px;
-                            border-left: 4px solid #FF3366;
-                            color: #8a6b6b;
-                            font-size: 0.9rem;
-                            font-style: italic;
-                        ">
-                            "Music was my refuge. I could crawl into the space between the notes and curl my back to loneliness." - Maya Angelou
-                        </div>
-                    </div>
-                `;
-                document.body.appendChild(errorDiv);
-            } else {
-                errorDiv.style.display = 'flex';
-            }
-        }
+                 function showApiDeprecationScreen() {
+             console.log('🚨 showApiDeprecationScreen() function called');
+             
+             // Hide all other elements
+             const landing = document.getElementById('landing');
+             const result = document.getElementById('result');
+             const loading = document.getElementById('loading');
+             
+             if (landing) landing.style.display = 'none';
+             if (result) result.style.display = 'none';
+             if (loading) loading.style.display = 'none';
+             
+             let errorDiv = document.getElementById('api-deprecation-error');
+             
+             if (!errorDiv) {
+                 console.log('Creating API deprecation screen');
+                 errorDiv = document.createElement('div');
+                 errorDiv.id = 'api-deprecation-error';
+                 errorDiv.style.cssText = `
+                     position: fixed;
+                     top: 0; left: 0; right: 0; bottom: 0;
+                     display: flex !important;
+                     align-items: center;
+                     justify-content: center;
+                     background: #fff5f7;
+                     z-index: 9999;
+                 `;
+                 errorDiv.innerHTML = `
+                     <div style="
+                         display: flex;
+                         flex-direction: column;
+                         align-items: center;
+                         justify-content: center;
+                         min-width: 320px;
+                         max-width: 450px;
+                         padding: 50px 30px;
+                         border-radius: 24px;
+                         background: #fff;
+                         box-shadow: 0 8px 32px rgba(0,0,0,0.08);
+                         text-align: center;
+                     ">
+                         <div style="font-size: 4rem; margin-bottom: 20px;">😔</div>
+                         <h2 style="color: #e85757; margin-bottom: 15px; font-size: 1.8rem; font-weight: 800;">Service Discontinued</h2>
+                         <div style="color: #8a6b6b; font-size: 1.1rem; line-height: 1.5; margin-bottom: 20px;">
+                             We're sorry to inform you that <strong>Persongality</strong> is no longer available.
+                         </div>
+                         <div style="color: #b36b6b; font-size: 1rem; line-height: 1.6; margin-bottom: 25px;">
+                             As of <strong>May 15th, 2025</strong>, Spotify changed their API policies and no longer allows independent developers to access the data needed for apps like this.
+                         </div>
+                         <div style="color: #b36b6b; font-size: 1rem; line-height: 1.6; margin-bottom: 30px;">
+                             Thank you for your interest in this silly web app. We apologize for any inconvenience.
+                         </div>
+                         <div style="
+                             background: rgba(255, 51, 102, 0.05);
+                             padding: 15px 20px;
+                             border-radius: 12px;
+                             border-left: 4px solid #FF3366;
+                             color: #8a6b6b;
+                             font-size: 0.9rem;
+                             font-style: italic;
+                             margin-bottom: 25px;
+                         ">
+                             If you are writing about us or really want to access it, email me at kevin.manuel41@ui.ac.id and I can grant you access through develpment mode.  - K.M.
+                         </div>
+                         <div style="display: flex; gap: 12px; flex-wrap: wrap; justify-content: center;">
+                             <button onclick="showDemoVideo()" style="
+                                 background: linear-gradient(45deg, #FF6B3D, #FF3366);
+                                 color: white;
+                                 padding: 12px 20px;
+                                 border: none;
+                                 border-radius: 25px;
+                                 font-size: 0.95rem;
+                                 font-weight: 600;
+                                 cursor: pointer;
+                                 transition: transform 0.2s ease;
+                                 min-width: 140px;
+                             " onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">
+                                 🎥 See Demo Video
+                             </button>
+                             <button onclick="accessOriginalApp()" style="
+                                 background: linear-gradient(45deg, #8522A3, #9B2BB7);
+                                 color: white;
+                                 padding: 12px 20px;
+                                 border: none;
+                                 border-radius: 25px;   
+                                 font-size: 0.95rem;
+                                 font-weight: 600;
+                                 cursor: pointer;
+                                 transition: transform 0.2s ease;
+                                 min-width: 140px;
+                             " onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">
+                                 🔑 Access Original
+                             </button>
+                         </div>
+                     </div>
+                 `;
+                 document.body.appendChild(errorDiv);
+             } else {
+                 errorDiv.style.display = 'flex';
+             }
+         }
+
+         function showDemoVideo() {
+             // Create a modal overlay for the video
+             const videoModal = document.createElement('div');
+             videoModal.id = 'video-modal';
+             videoModal.style.cssText = `
+                 position: fixed;
+                 top: 0; left: 0; right: 0; bottom: 0;
+                 background: rgba(0, 0, 0, 0.9);
+                 display: flex;
+                 align-items: center;
+                 justify-content: center;
+                 z-index: 10000;
+             `;
+             
+             videoModal.innerHTML = `
+                 <div style="
+                     position: relative;
+                     max-width: 90vw;
+                     max-height: 90vh;
+                     background: #fff;
+                     border-radius: 20px;
+                     overflow: hidden;
+                     box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+                 ">
+                     <button onclick="closeVideoModal()" style="
+                         position: absolute;
+                         top: 15px;
+                         right: 15px;
+                         background: rgba(0,0,0,0.7);
+                         color: white;
+                         border: none;
+                         border-radius: 50%;
+                         width: 40px;
+                         height: 40px;
+                         cursor: pointer;
+                         font-size: 1.2rem;
+                         z-index: 10001;
+                     ">×</button>
+                     
+                                           <!-- Demo Video -->
+                      <video 
+                          controls 
+                          autoplay
+                          style="
+                              width: 80vw;
+                              max-width: 800px;
+                              height: 60vh;
+                              max-height: 450px;
+                              border-radius: 10px;
+                          "
+                      >
+                          <source src="demovideo.MOV" type="video/quicktime">
+                          <source src="demovideo.MOV" type="video/mp4">
+                          Your browser does not support the video tag.
+                      </video>
+                 </div>
+             `;
+             
+             document.body.appendChild(videoModal);
+             
+             // Close modal when clicking outside
+             videoModal.addEventListener('click', function(e) {
+                 if (e.target === videoModal) {
+                     closeVideoModal();
+                 }
+             });
+         }
+
+         function closeVideoModal() {
+             const modal = document.getElementById('video-modal');
+             if (modal) {
+                 modal.remove();
+             }
+         }
+
+         function accessOriginalApp() {
+             // Hide the deprecation screen and show the original app
+             const deprecationScreen = document.getElementById('api-deprecation-error');
+             if (deprecationScreen) {
+                 deprecationScreen.style.display = 'none';
+             }
+             
+             // Show the original landing page
+             const landing = document.getElementById('landing');
+             if (landing) {
+                 landing.style.display = 'flex';
+             }
+             
+             // Restore the original connectSpotify functionality
+             window.originalConnectSpotify = async function() {
+                 const urlParams = new URLSearchParams(window.location.search);
+                 const code = urlParams.get('code');
+
+                 if (code) {
+                     // We're in the callback flow - don't clear localStorage
+                     document.querySelector('.btn').style.display = 'none';
+                     document.getElementById('loading').style.display = 'block';
+
+                     try {
+                         console.log('=== STARTING SPOTIFY LOGIN FLOW ===');
+                         console.log('Redirect URI being used:', REDIRECT_URI);
+                         console.log('Authorization code received:', code.substring(0, 20) + '...');
+                         const tokenData = await getAccessToken(code);
+                         accessToken = tokenData.access_token;
+                         console.log('✓ Got access token');
+
+                         let tracks;
+                         try {
+                             tracks = await getTopTracks();
+                             console.log('✓ Got tracks:', tracks);
+                             console.log('Track count:', tracks.items?.length || 0);
+                         } catch (tracksError) {
+                             if (tracksError.message === 'INSUFFICIENT_DATA') {
+                                 console.log('❌ INSUFFICIENT LISTENING DATA FROM SPOTIFY - Showing error screen');
+                                 document.getElementById('loading').style.display = 'none';
+                                 setTimeout(() => showError(), 100);
+                                 return;
+                             }
+                             throw tracksError; // Re-throw if it's not insufficient data
+                         }
+                         
+                         // Check if we have enough tracks
+                         if (!tracks.items || tracks.items.length < 5) {
+                             console.log('❌ INSUFFICIENT TRACKS - Showing error screen');
+                             console.log('Track count:', tracks.items?.length || 0);
+                             document.getElementById('loading').style.display = 'none';
+                             setTimeout(() => showError(), 100); // Small delay to ensure loading is hidden
+                             return;
+                         }
+
+                         let features = null;
+                         try {
+                             console.log('Attempting to get audio features...');
+                             features = await getAudioFeatures(tracks.items.map(t => t.id));
+                             console.log('✓ Got audio features:', features);
+                             
+                             // Check if we have enough matched features
+                             if (!features || !features.audio_features || features.audio_features.length < 3) {
+                                 console.log('❌ INSUFFICIENT AUDIO FEATURES - Showing error screen');
+                                 console.log('Audio features count:', features?.audio_features?.length || 0);
+                                 document.getElementById('loading').style.display = 'none';
+                                 setTimeout(() => showError(), 100); // Small delay to ensure loading is hidden
+                                 return;
+                             }
+                             
+                         } catch (audioError) {
+                             console.log('❌ AUDIO FEATURES FAILED - Showing error screen');
+                             console.error('Audio features error:', audioError);
+                             document.getElementById('loading').style.display = 'none';
+                             setTimeout(() => showError(), 100); // Small delay to ensure loading is hidden
+                             return;
+                         }
+
+                         console.log('✓ All checks passed, showing results');
+                         const personality = personalityAnalyzer.analyzePersonality(features?.audio_features, tracks.items);
+                         showResult(personality, tracks.items);
+                     } catch (error) {
+                         console.log('❌ GENERAL ERROR - Showing error screen');
+                         console.error('General error:', error);
+                         document.getElementById('loading').style.display = 'none';
+                         setTimeout(() => showError(), 100); // Small delay to ensure loading is hidden
+                     }
+                 } else {
+                     // Clear localStorage only when starting fresh authentication
+                     localStorage.clear();
+
+                     const verifier = generateCodeVerifier();
+                     const challenge = await generateCodeChallenge(verifier);
+                     localStorage.setItem('code_verifier', verifier);
+
+                     const params = new URLSearchParams({
+                         client_id: CLIENT_ID,
+                         response_type: 'code',
+                         redirect_uri: REDIRECT_URI,
+                         scope: 'user-top-read user-read-private user-library-read playlist-read-private',
+                         code_challenge_method: 'S256',
+                         code_challenge: challenge
+                     }).toString();
+
+                     window.location.href = 'https://accounts.spotify.com/authorize?' + params;
+                 }
+             };
+             
+             // Update the button to use the original functionality
+             const connectButton = document.querySelector('.btn');
+             if (connectButton) {
+                 connectButton.setAttribute('onclick', 'originalConnectSpotify()');
+             }
+         }
+
+
 
         function showError() {
             console.log('🚨 showError() function called');
